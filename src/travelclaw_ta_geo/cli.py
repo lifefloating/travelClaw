@@ -20,7 +20,7 @@ console = Console()
 def poc(
     seed: Path = typer.Option(Path("seeds/destinations.sample.csv"), "--seed", exists=True, readable=True),
     limit_geos: int = typer.Option(3, "--limit-geos", min=1),
-    max_images_per_geo: int = typer.Option(100, "--max-images-per-geo", min=0, max=10000),
+    max_images_per_geo: int = typer.Option(100, "--max-images-per-geo", min=0),
     output_dir: Path = typer.Option(Path("data/poc"), "--output-dir"),
     upload: bool = typer.Option(False, "--upload/--no-upload"),
 ) -> None:
@@ -32,12 +32,14 @@ def poc(
 def crawl(
     seed: Path = typer.Option(Path("seeds/destinations.sample.csv"), "--seed", exists=True, readable=True),
     output_dir: Path = typer.Option(Path("data/runs"), "--output-dir"),
-    max_images_per_geo: int = typer.Option(10000, "--max-images-per-geo", min=0, max=10000),
+    max_images_per_geo: int | None = typer.Option(None, "--max-images-per-geo", min=0),
     limit_geos: int | None = typer.Option(None, "--limit-geos", min=1),
     upload: bool = typer.Option(False, "--upload/--no-upload"),
 ) -> None:
     """Run a full Tripadvisor geo crawl."""
-    _run_crawl(seed, limit_geos, max_images_per_geo, output_dir, upload)
+    settings = Settings()
+    images = max_images_per_geo if max_images_per_geo is not None else settings.ta_max_images_per_geo
+    _run_crawl(seed, limit_geos, images, output_dir, upload)
 
 
 @app.command("package")

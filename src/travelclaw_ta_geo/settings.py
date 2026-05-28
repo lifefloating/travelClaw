@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     ta_detail_concurrency: int = Field(default=4, ge=1, le=32)
     ta_graphql_concurrency: int = Field(default=4, ge=1, le=32)
     ta_image_concurrency: int = Field(default=16, ge=1, le=64)
-    ta_r2_concurrency: int = Field(default=16, ge=1, le=64)
+    ta_r2_concurrency: int = Field(default=10, ge=1, le=64)
     ta_requests_per_second: float = Field(default=1.0, gt=0, le=20)
     ta_request_jitter_seconds: float = Field(default=0.3, ge=0, le=10)
     ta_max_retries: int = Field(default=3, ge=0, le=10)
@@ -23,14 +23,18 @@ class Settings(BaseSettings):
     ta_gallery_query_id: str = "e451fc43b6a61cab"
     ta_locale: str = "en-US"
     ta_timezone: str = "America/New_York"
-    ta_html_browser_fallback: bool = False
+    ta_html_browser_fallback: bool = True
     ta_headless: bool = True
     ta_real_chrome: bool = False
     ta_disable_resources: bool = False
+    ta_browser_user_data_dir: str = "data/browser/tripadvisor"
+    ta_browser_sticky_after_block: bool = True
+    ta_browser_block_statuses: str = "403,429,503"
     ta_image_max_bytes: int = Field(default=25 * 1024 * 1024, ge=1024 * 1024)
     ta_image_max_side: int = Field(default=8000, ge=256)
-    ta_download_side: int = Field(default=2000, ge=256, le=8000)
+    ta_download_side: int = Field(default=8000, ge=256, le=8000)
     ta_image_dedupe_distance: int = Field(default=8, ge=0, le=64)
+    ta_max_images_per_geo: int = Field(default=10000, ge=0, le=100000)
 
     r2_upload_enabled: bool = False
     r2_access_key_id: str = ""
@@ -55,6 +59,15 @@ class Settings(BaseSettings):
     @property
     def proxies(self) -> list[str]:
         return [item.strip() for item in self.ta_proxies.split(",") if item.strip()]
+
+    @property
+    def browser_block_statuses(self) -> set[int]:
+        out: set[int] = set()
+        for item in self.ta_browser_block_statuses.split(","):
+            item = item.strip()
+            if item.isdigit():
+                out.add(int(item))
+        return out or {403, 429, 503}
 
     @property
     def r2_configured(self) -> bool:

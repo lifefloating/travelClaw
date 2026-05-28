@@ -41,7 +41,12 @@ class PackageBuilder:
 
         source_media = run_dir / "media"
         if source_media.exists():
-            shutil.copytree(source_media, target / "media", dirs_exist_ok=True)
+            shutil.copytree(
+                source_media,
+                target / "media",
+                dirs_exist_ok=True,
+                ignore=shutil.ignore_patterns(".DS_Store", "Thumbs.db", "desktop.ini", "._*"),
+            )
 
         manifest = build_manifest(self.settings, target, delivered_at, notes=notes)
         manifest_path = target / "manifest.json"

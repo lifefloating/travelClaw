@@ -1,21 +1,23 @@
 name_cn,name_en,latitude,longitude,kind,country_code,tripadvisor_url,tripadvisor_geo_id
 京都,Kyoto,35.01160,135.75830,city,JP,https://www.tripadvisor.com/Tourism-g298564-Kyoto_Kyoto_Prefecture_Kinki-Vacations.html,298564
-伊斯坦布尔,Istanbul,41.00820,28.97840,city,TR,,
-巴黎,Paris,48.85660,2.35220,city,FR,,
-布拉格,Prague,50.07550,14.43780,city,CZ,,
-马拉喀什,Marrakesh,31.62950,-7.98110,city,MA,,
-布宜诺斯艾利斯,Buenos Aires,-34.60370,-58.38160,city,AR,,
-里斯本,Lisbon,38.72230,-9.13930,city,PT,,
-纽约,New York,40.71280,-74.00600,city,US,,
-旧金山,San Francisco,37.77490,-122.41940,city,US,,
-新奥尔良,New Orleans,29.95110,-90.07150,city,US,,
-冰岛高地,Icelandic Highlands,64.68400,-19.30900,natural_region,IS,,
-巴塔哥尼亚,Patagonia,-50.49550,-73.13760,natural_region,AR,,
-挪威峡湾,Norwegian Fjords,62.10450,7.20780,natural_region,NO,,
-撒哈拉沙漠,Sahara Desert,23.00000,13.00000,desert,TD,,
-新西兰南岛,South Island,-43.98330,170.45000,island,NZ,,
-瑞士阿尔卑斯,Swiss Alps,46.63680,8.59350,mountain_region,CH,,
-日本屋久岛,Yakushima,30.36000,130.53000,island,JP,,
-大峡谷,Grand Canyon,36.05440,-112.14010,national_park,US,,
-优胜美地,Yosemite,37.86510,-119.53830,national_park,US,,
-夏威夷,Hawaii,19.56670,-155.50000,island_region,US,,
+伊斯坦布尔,Istanbul,41.00820,28.97840,city,TR,https://www.tripadvisor.com/Tourism-g293974-Istanbul-Vacations.html,293974
+巴黎,Paris,48.85660,2.35220,city,FR,https://www.tripadvisor.com/Tourism-g187147-Paris_Ile_de_France-Vacations.html,187147
+布拉格,Prague,50.07550,14.43780,city,CZ,https://www.tripadvisor.com/Tourism-g274707-Prague_Bohemia-Vacations.html,274707
+马拉喀什,Marrakesh,31.62950,-7.98110,city,MA,https://www.tripadvisor.com/Tourism-g293734-Marrakech_Marrakech_Safi-Vacations.html,293734
+布宜诺斯艾利斯,Buenos Aires,-34.60370,-58.38160,city,AR,https://www.tripadvisor.com/Tourism-g312741-Buenos_Aires_Capital_Federal_District-Vacations.html,312741
+里斯本,Lisbon,38.72230,-9.13930,city,PT,https://www.tripadvisor.com/Tourism-g189158-Lisbon_Lisbon_District_Central_Portugal-Vacations.html,189158
+纽约,New York,40.71280,-74.00600,city,US,https://www.tripadvisor.com/Tourism-g60763-New_York_City_New_York-Vacations.html,60763
+旧金山,San Francisco,37.77490,-122.41940,city,US,https://www.tripadvisor.com/Tourism-g60713-San_Francisco_California-Vacations.html,60713
+新奥尔良,New Orleans,29.95110,-90.07150,city,US,https://www.tripadvisor.com/Tourism-g60864-New_Orleans_Louisiana-Vacations.html,60864
+巴塔哥尼亚,Patagonia,-50.49550,-73.13760,natural_region,AR,https://www.tripadvisor.com/Tourism-g294276-Patagonia-Vacations.html,294276
+新西兰南岛,South Island,-43.98330,170.45000,island,NZ,https://www.tripadvisor.com/Tourism-g255116-South_Island-Vacations.html,255116
+瑞士阿尔卑斯,Swiss Alps,46.63680,8.59350,mountain_region,CH,https://www.tripadvisor.com/Tourism-g188077-Swiss_Alps-Vacations.html,188077
+日本屋久岛,Yakushima,30.36000,130.53000,island,JP,https://www.tripadvisor.com/Tourism-g3211144-Yakushima_Yakushima_cho_Kumage_gun_Kagoshima_Prefecture_Kyushu-Vacations.html,3211144
+大峡谷,Grand Canyon,36.05440,-112.14010,national_park,US,https://www.tripadvisor.com/Tourism-g143028-Grand_Canyon_National_Park_Arizona-Vacations.html,143028
+优胜美地,Yosemite,37.86510,-119.53830,national_park,US,https://www.tripadvisor.com/Tourism-g61000-Yosemite_National_Park_California-Vacations.html,61000
+夏威夷,Hawaii,19.56670,-155.50000,island_region,US,https://www.tripadvisor.com/Tourism-g29217-Island_of_Hawaii_Hawaii-Vacations.html,29217
+冰岛,Iceland,64.96310,-19.02080,country,IS,https://www.tripadvisor.com/Tourism-g189952-Iceland-Vacations.html,189952
+松恩峡湾,Sognefjord,61.06670,6.56670,fjord,NO,https://www.tripadvisor.com/Tourism-g190507-Sogn_og_Fjordane_Western_Norway-Vacations.html,190507
+盖朗厄尔峡湾,Geirangerfjord,62.10140,7.20740,fjord,NO,https://www.tripadvisor.com/Tourism-g642196-Geiranger_Stranda_More_og_Romsdal_Western_Norway-Vacations.html,642196
+梅尔祖卡,Merzouga,31.09970,-4.01360,desert,MA,https://www.tripadvisor.com/Tourism-g304017-Merzouga_Draa_Tafilalet-Vacations.html,304017
+杜兹,Douz,33.46670,9.02030,desert,TN,https://www.tripadvisor.com/Tourism-g477972-Douz_Kebili_Governorate-Vacations.html,477972

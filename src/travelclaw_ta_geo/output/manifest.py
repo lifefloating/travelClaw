@@ -9,6 +9,14 @@ from typing import Any
 from travelclaw_ta_geo.settings import Settings
 
 
+_JUNK_FILENAMES = {".DS_Store", "Thumbs.db", "desktop.ini"}
+
+
+def is_junk_file(path: Path) -> bool:
+    name = path.name
+    return name in _JUNK_FILENAMES or name.startswith("._")
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -40,6 +48,8 @@ def build_manifest(settings: Settings, package_dir: Path, delivered_at: str, not
     files: list[dict[str, Any]] = []
     for path in sorted(package_dir.rglob("*")):
         if not path.is_file() or path.name in {"manifest.json", "_READY"}:
+            continue
+        if is_junk_file(path):
             continue
         relative = path.relative_to(package_dir).as_posix()
         entry: dict[str, Any] = {

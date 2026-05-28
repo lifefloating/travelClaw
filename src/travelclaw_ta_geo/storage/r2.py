@@ -6,6 +6,7 @@ from pathlib import Path
 
 from boto3.s3.transfer import TransferConfig
 
+from travelclaw_ta_geo.output.manifest import is_junk_file
 from travelclaw_ta_geo.settings import Settings
 
 
@@ -37,7 +38,7 @@ class R2Uploader:
         regular_files = [
             path
             for path in sorted(package_dir.rglob("*"))
-            if path.is_file() and path.name not in {"_READY"}
+            if path.is_file() and path.name not in {"_READY"} and not is_junk_file(path)
         ]
         uploaded: list[str] = []
         with ThreadPoolExecutor(max_workers=self.settings.ta_r2_concurrency) as pool:
@@ -53,6 +54,7 @@ class R2Uploader:
 
     def _client(self):
         import boto3
+        from botocore.config import Config
 
         return boto3.client(
             "s3",
@@ -60,6 +62,7 @@ class R2Uploader:
             aws_access_key_id=self.settings.r2_access_key_id,
             aws_secret_access_key=self.settings.r2_secret_access_key,
             region_name=self.settings.r2_region,
+            config=Config(max_pool_connections=self.settings.ta_r2_concurrency),
         )
 
     def _upload_file(self, client, config: TransferConfig, package_dir: Path, path: Path, prefix: str) -> str:

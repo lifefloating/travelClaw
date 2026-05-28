@@ -5,9 +5,24 @@ import random
 import threading
 import time
 import uuid
+from pathlib import Path
 from typing import Any
 
 from travelclaw_ta_geo.settings import Settings
+
+
+class BlockedByAntiBotError(RuntimeError):
+    """Raised when a response status matches a configured anti-bot status (default: 403/429/503).
+
+    Used as the signal to escalate from the static curl_cffi path to the StealthySession
+    browser path. Distinct from generic RuntimeError so transient 5xx / timeouts still
+    flow through normal retries instead of spinning up a browser session.
+    """
+
+    def __init__(self, url: str, status: int) -> None:
+        super().__init__(f"GET {url} returned HTTP {status} (anti-bot)")
+        self.url = url
+        self.status = status
 
 
 class RateLimiter:
@@ -41,6 +56,8 @@ class TripadvisorHttpClient:
         self._proxy = self._initial_proxy()
         self._html_session: Any | None = None
         self._html_session_lock = threading.Lock()
+        self._block_statuses: set[int] = settings.browser_block_statuses
+        self._sticky_browser = False
 
     def get_html(self, url: str, referer: str | None = None) -> str:
         response = self._with_retries(lambda: self._fetch_html(url, referer))
@@ -80,6 +97,10 @@ class TripadvisorHttpClient:
             self.rate_limiter.wait()
             try:
                 return func()
+            except BlockedByAntiBotError:
+                # Anti-bot block won't go away by retrying with the same client.
+                # Let _fetch_html() handle the escalation to a browser session.
+                raise
             except Exception as exc:
                 last_error = exc
                 if attempt >= self.settings.ta_max_retries:
@@ -106,13 +127,19 @@ class TripadvisorHttpClient:
         return headers
 
     def _fetch_html(self, url: str, referer: str | None) -> Any:
+        # Sticky mode: once a 403/429/503 has been seen on this client, keep using
+        # the browser session for all subsequent HTML requests so we don't pay
+        # the static-attempt-then-fail tax on every URL.
+        if self._sticky_browser and self.settings.ta_html_browser_fallback:
+            return self._fetch_html_browser(url, referer)
         try:
             return self._get_static(url, referer)
-        except RuntimeError as exc:
+        except BlockedByAntiBotError as exc:
             if not self.settings.ta_html_browser_fallback:
                 raise
-            # Browser fallback for cases where DataDome / Cloudflare blocks curl_cffi.
             self._record_browser_fallback(str(exc))
+            if self.settings.ta_browser_sticky_after_block:
+                self._sticky_browser = True
             return self._fetch_html_browser(url, referer)
 
     def _get_static(self, url: str, referer: str | None) -> Any:
@@ -130,6 +157,8 @@ class TripadvisorHttpClient:
             retries=1,
         )
         status = getattr(response, "status", 200)
+        if status in self._block_statuses:
+            raise BlockedByAntiBotError(url, status)
         if status >= 400:
             raise RuntimeError(f"GET {url} returned HTTP {status}")
         return response
@@ -188,6 +217,7 @@ class TripadvisorHttpClient:
                 return self._html_session
             from scrapling.fetchers import StealthySession
 
+            user_data_dir = self._resolve_user_data_dir()
             session = StealthySession(
                 headless=self.settings.ta_headless,
                 real_chrome=self.settings.ta_real_chrome,
@@ -195,9 +225,11 @@ class TripadvisorHttpClient:
                 network_idle=False,
                 solve_cloudflare=True,
                 block_webrtc=True,
+                allow_webgl=True,
                 google_search=False,
                 locale=self.settings.ta_locale,
                 timezone_id=self.settings.ta_timezone,
+                user_data_dir=user_data_dir,
                 proxy=self._proxy,
                 timeout=max(self.settings.ta_timeout_seconds * 1000, 60000),
                 wait=1500,
@@ -206,6 +238,14 @@ class TripadvisorHttpClient:
             session.__enter__()
             self._html_session = session
             return session
+
+    def _resolve_user_data_dir(self) -> str | None:
+        configured = self.settings.ta_browser_user_data_dir.strip()
+        if not configured:
+            return None
+        path = Path(configured)
+        path.mkdir(parents=True, exist_ok=True)
+        return str(path)
 
     @staticmethod
     def _record_browser_fallback(reason: str) -> None:

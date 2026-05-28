@@ -21,3 +21,7 @@ downloads/
 *.log
 .DS_Store
 
+# Debug captures (may contain cookies / fingerprints — keep local only)
+*.har
+tripadvisor-detail-403-camoufox-debug.html
+

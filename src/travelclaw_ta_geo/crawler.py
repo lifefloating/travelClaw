@@ -66,7 +66,7 @@ class TripadvisorGeoCrawler:
         seeds = load_seeds(seed_path)
         if limit_geos is not None and limit_geos > 0:
             seeds = seeds[:limit_geos]
-        max_images_per_geo = min(max_images_per_geo, 10000)
+        max_images_per_geo = min(max_images_per_geo, self.settings.ta_max_images_per_geo)
 
         geo_writer = NdjsonWriter(run_dir / "geo.ndjson")
         media_writer = NdjsonWriter(run_dir / "media.ndjson", lazy=True)

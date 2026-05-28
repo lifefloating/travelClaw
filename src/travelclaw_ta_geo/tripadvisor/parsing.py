@@ -121,8 +121,12 @@ def extract_breadcrumbs(json_ld: Iterable[dict[str, Any]]) -> list[str]:
         for element in elements:
             if not isinstance(element, dict):
                 continue
-            name = element.get("name") or (element.get("item") or {}).get("name") if isinstance(element.get("item"), dict) else ""
-            text = clean_text(str(name)) if name else ""
+            raw_name = element.get("name")
+            if not raw_name:
+                nested = element.get("item")
+                if isinstance(nested, dict):
+                    raw_name = nested.get("name")
+            text = clean_text(str(raw_name)) if raw_name else ""
             if text:
                 crumbs.append(text)
     return crumbs

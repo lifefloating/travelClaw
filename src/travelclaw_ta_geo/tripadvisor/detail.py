@@ -25,7 +25,7 @@ class TripadvisorDetailParser:
     def fetch_and_parse(self, discovery: DiscoveryResult) -> tuple[GeoPage, str]:
         try:
             html = self.client.get_html(discovery.url, referer=self.settings.base_url + "/")
-        except Exception:
+        except Exception as exc:
             page = GeoPage(
                 seed=discovery.seed,
                 url=discovery.url,
@@ -33,7 +33,10 @@ class TripadvisorDetailParser:
                 canonical_url=discovery.url,
                 name=discovery.seed.name_en or discovery.seed.name_cn,
                 gallery_query_id=self.settings.ta_gallery_query_id,
-                raw_meta={"detail_html": "unavailable"},
+                raw_meta={
+                    "detail_html": "unavailable",
+                    "detail_error": f"{type(exc).__name__}: {exc}",
+                },
             )
             return page, ""
         json_ld = extract_json_ld(html)
