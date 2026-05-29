@@ -70,6 +70,8 @@ R2_REGION=auto
 docker compose build
 ```
 
+`docker-compose.yml` 只让 `crawler` 服务负责构建并标记 `travelclaw-ta-geo:latest`；`preheat` 和 `monitor` 复用这个镜像，且不会从 registry 拉取同名镜像。这样重复执行 `docker compose build` 时不会让多个服务并发导出同一个 image tag。
+
 镜像包含 Python 依赖和 Chromium。图片去重使用轻量的 `ImageHash` PHash 实现，避免拉入 `torch` / NVIDIA / CUDA 依赖。Dockerfile 已清理 `uv` 安装缓存，避免额外打进去一份依赖缓存。
 
 ## 预热浏览器 profile

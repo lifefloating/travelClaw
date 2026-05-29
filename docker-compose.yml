@@ -1,10 +1,11 @@
 services:
   # One-shot: warm the base browser profile so cf_clearance is captured. Run
   # this first on a fresh VPS (or after a profile reset), before `crawler`.
+  # Uses the image built by `crawler`; run `docker compose build` first.
   #   docker compose run --rm preheat
   preheat:
-    build: .
     image: travelclaw-ta-geo:latest
+    pull_policy: never
     env_file: .env
     environment:
       DATA_ROOT: /data/city_geo
@@ -16,6 +17,9 @@ services:
 
   # Main crawl. Override the command to scope cities, e.g.:
   #   docker compose run --rm crawler run --cities g293974,g298564 --parallel 2 --upload
+  # This is the only service that builds/tags travelclaw-ta-geo:latest. If all
+  # services build the same tag concurrently, BuildKit can fail with
+  # "image ... already exists" during export.
   crawler:
     build: .
     image: travelclaw-ta-geo:latest
@@ -34,10 +38,11 @@ services:
     command: ["run", "--all", "--parallel", "4", "--upload"]
 
   # Live progress dashboard. Reads <data_root>/status; attach to a running crawl:
+  # Uses the image built by `crawler`; run `docker compose build` first.
   #   docker compose run --rm monitor
   monitor:
-    build: .
     image: travelclaw-ta-geo:latest
+    pull_policy: never
     env_file: .env
     environment:
       DATA_ROOT: /data/city_geo
