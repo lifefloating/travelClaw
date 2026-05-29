@@ -7,7 +7,7 @@ readme = "README.md"
 requires-python = ">=3.10,<4.0"
 dependencies = [
     "boto3>=1.35",
-    "imagededup>=0.3",
+    "ImageHash>=4.3",
     "pillow>=10.0",
     "pydantic>=2.0",
     "pydantic-settings>=2.0",

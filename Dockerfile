@@ -8,8 +8,7 @@ ENV PYTHONUNBUFFERED=1 \
     UV_PROJECT_ENVIRONMENT=/app/.venv \
     DATA_ROOT=/data/city_geo
 
-# Xvfb + fonts so headful Chromium renders on a virtual display. g++ is needed
-# to build imagededup's native extension on Linux ARM64. Chromium's own
+# Xvfb + fonts so headful Chromium renders on a virtual display. Chromium's own
 # shared-library deps are installed by `scrapling install` (playwright install-deps).
 RUN apt-get update && apt-get install -y --no-install-recommends \
         xvfb \
@@ -18,7 +17,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         fonts-noto-cjk \
         tini \
         curl \
-        g++ \
     && rm -rf /var/lib/apt/lists/*
 
 # uv for all dependency + run operations.

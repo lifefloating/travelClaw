@@ -70,7 +70,7 @@ R2_REGION=auto
 docker compose build
 ```
 
-镜像包含 Python 依赖和 Chromium。`imagededup` 会拉 `torch`，`torch` 在 Linux 下会带 NVIDIA/CUDA 相关依赖，所以镜像仍会比较大。Dockerfile 已清理 `uv` 安装缓存，避免额外打进去一份约 5GB 的依赖缓存。
+镜像包含 Python 依赖和 Chromium。图片去重使用轻量的 `ImageHash` PHash 实现，避免拉入 `torch` / NVIDIA / CUDA 依赖。Dockerfile 已清理 `uv` 安装缓存，避免额外打进去一份依赖缓存。
 
 ## 预热浏览器 profile
 

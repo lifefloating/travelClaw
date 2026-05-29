@@ -3,12 +3,12 @@ from __future__ import annotations
 import re
 from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextlib import suppress
 from dataclasses import dataclass
 from io import BytesIO
 from pathlib import Path
 
-import numpy as np
-from imagededup.methods import PHash
+import imagehash
 from PIL import Image
 
 from travelclaw_ta_geo.settings import Settings
@@ -42,7 +42,6 @@ class MediaDownloader:
     def __init__(self, settings: Settings, client: TripadvisorHttpClient) -> None:
         self.settings = settings
         self.client = client
-        self._phasher = PHash()
 
     def download_many(
         self,
@@ -82,10 +81,8 @@ class MediaDownloader:
                     continue
                 duplicate_of = self._find_duplicate(outcome.phash, kept_hashes, threshold)
                 if duplicate_of is not None:
-                    try:
+                    with suppress(OSError):
                         outcome.media.path.unlink(missing_ok=True)
-                    except OSError:
-                        pass
                     yield MediaDownloadError(
                         candidate=candidate,
                         message=f"duplicate of phash#{duplicate_of} (distance<={threshold})",
@@ -146,10 +143,9 @@ class MediaDownloader:
             phash = self._phash_from_pil(image)
         return width, height, mime_type, phash
 
-    def _phash_from_pil(self, image: Image.Image) -> str:
-        rgb = image.convert("RGB")
-        # imagededup's encode_image takes either a file path or an HxWx3 uint8 ndarray
-        return self._phasher.encode_image(image_array=np.asarray(rgb, dtype=np.uint8))
+    @staticmethod
+    def _phash_from_pil(image: Image.Image) -> str:
+        return str(imagehash.phash(image.convert("RGB")))
 
     @staticmethod
     def _find_duplicate(phash: str, kept: list[str], threshold: int) -> int | None:
