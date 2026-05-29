@@ -145,6 +145,11 @@ class TripadvisorGeoCrawler:
             error_rows=error_rows,
         )
 
+    def process_seed(self, seed: DestinationSeed, max_images_per_geo: int) -> ProcessedGeo:
+        """Public entry point reused by the per-city runner. Delegates to the
+        existing internal pipeline so the crawl/anti-bot mechanism is unchanged."""
+        return self._process_seed(seed, max_images_per_geo)
+
     def _process_seed(self, seed: DestinationSeed, max_images_per_geo: int) -> ProcessedGeo:
         captured_at = utc_now()
         discovery = self.discovery.discover(seed)

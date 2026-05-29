@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     ta_browser_user_data_dir: str = "data/browser/tripadvisor"
     ta_browser_sticky_after_block: bool = True
     ta_browser_block_statuses: str = "403,429,503"
+
+    # VPS orchestration. Default root is /data/city_geo per ops spec; everything
+    # (raw, packages, status, persistent state, browser profiles) lives under it.
+    data_root: str = "/data/city_geo"
+    ta_worker_count: int = Field(default=4, ge=1, le=32)
     ta_image_max_bytes: int = Field(default=25 * 1024 * 1024, ge=1024 * 1024)
     ta_image_max_side: int = Field(default=8000, ge=256)
     ta_download_side: int = Field(default=8000, ge=256, le=8000)
@@ -55,6 +60,20 @@ class Settings(BaseSettings):
     @property
     def base_url(self) -> str:
         return self.ta_base_url.rstrip("/")
+
+    @property
+    def layout(self):
+        # Imported lazily to keep settings import-light and avoid a cycle.
+        from travelclaw_ta_geo.paths import DataLayout
+
+        return DataLayout(Path(self.data_root))
+
+    def for_worker(self, worker_index: int) -> Settings:
+        """Clone settings with a worker-private browser profile dir so parallel
+        worker processes never open the same StealthySession user_data_dir
+        (which would lock). Pass the result down to a single-process crawl."""
+        worker_dir = self.layout.worker_profile(worker_index)
+        return self.model_copy(update={"ta_browser_user_data_dir": str(worker_dir)})
 
     @property
     def proxies(self) -> list[str]:

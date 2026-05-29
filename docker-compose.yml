@@ -1,0 +1,46 @@
+services:
+  # One-shot: warm the base browser profile so cf_clearance is captured. Run
+  # this first on a fresh VPS (or after a profile reset), before `crawler`.
+  #   docker compose run --rm preheat
+  preheat:
+    build: .
+    image: travelclaw-ta-geo:latest
+    env_file: .env
+    environment:
+      DATA_ROOT: /data/city_geo
+      TA_HEADLESS: "true"
+    shm_size: "2gb"
+    volumes:
+      - /data/city_geo:/data/city_geo
+    command: ["preheat", "--settle-seconds", "12"]
+
+  # Main crawl. Override the command to scope cities, e.g.:
+  #   docker compose run --rm crawler run --cities g293974,g298564 --parallel 2 --upload
+  crawler:
+    build: .
+    image: travelclaw-ta-geo:latest
+    env_file: .env
+    environment:
+      DATA_ROOT: /data/city_geo
+      TA_HEADLESS: "true"
+    shm_size: "2gb"
+    deploy:
+      resources:
+        limits:
+          cpus: "7.0"
+          memory: 14g
+    volumes:
+      - /data/city_geo:/data/city_geo
+    command: ["run", "--all", "--parallel", "4", "--upload"]
+
+  # Live progress dashboard. Reads <data_root>/status; attach to a running crawl:
+  #   docker compose run --rm monitor
+  monitor:
+    build: .
+    image: travelclaw-ta-geo:latest
+    env_file: .env
+    environment:
+      DATA_ROOT: /data/city_geo
+    volumes:
+      - /data/city_geo:/data/city_geo
+    command: ["monitor"]
