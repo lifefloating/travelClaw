@@ -277,6 +277,25 @@ docker compose run --rm monitor
 docker compose run --rm monitor monitor --once
 ```
 
+如果只想在宿主机上快速看状态，不想再启动容器，可以直接读状态文件：
+
+```bash
+chmod +x scripts/view-crawler-status.sh
+scripts/view-crawler-status.sh
+```
+
+持续刷新：
+
+```bash
+scripts/view-crawler-status.sh --watch 5
+```
+
+脚本默认读取 `.env` 里的 `DATA_ROOT`，没有配置时使用 `/data/city_geo`。也可以手动指定：
+
+```bash
+scripts/view-crawler-status.sh --data-root /data/city_geo
+```
+
 监控读取：
 
 ```text
@@ -372,4 +391,10 @@ docker compose run --rm monitor
 
 # 单次进度快照
 docker compose run --rm monitor monitor --once
+
+# 宿主机直接查看状态文件
+scripts/view-crawler-status.sh
+
+# 宿主机持续刷新状态
+scripts/view-crawler-status.sh --watch 5
 ```
