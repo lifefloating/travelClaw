@@ -46,6 +46,9 @@ cp .env.example .env
 DATA_ROOT=/data/city_geo
 TA_PROXIES=http://user:password@host1:port,http://user:password@host2:port
 TA_WORKER_COUNT=4
+TA_IMAGE_CONCURRENCY=32
+TA_IMAGE_REQUESTS_PER_SECOND=32
+TA_IMAGE_USE_PROXY=false
 TA_HEADLESS=true
 TA_REAL_CHROME=false
 ```
@@ -362,7 +365,10 @@ qiqi/geo/tripadvisor/<YYYY-MM-DDTHHMMSSZ>/
 
 - `--parallel` 会被 `.env` 里的 `TA_WORKER_COUNT` 限制
 - 每个 worker 是独立进程，并有自己的浏览器 profile
+- 图片下载用独立限速: `TA_IMAGE_CONCURRENCY` 和 `TA_IMAGE_REQUESTS_PER_SECOND`
+- 默认 `TA_IMAGE_USE_PROXY=false`，HTML/GraphQL 仍走 `TA_PROXIES`，图片 CDN 直连以吃满 VPS 出口
 - 如果 403/429 增多，先降到 `--parallel 1` 或 `--parallel 2`
+- 如果图片下载 403/429 增多，先把 `TA_IMAGE_REQUESTS_PER_SECOND` 降到 16；仍不稳再把 `TA_IMAGE_USE_PROXY=true`
 - 如果内存压力明显，也先降低 `--parallel`
 
 ## 常用命令汇总

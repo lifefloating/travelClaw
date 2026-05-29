@@ -83,10 +83,6 @@ class MediaDownloader:
                 if duplicate_of is not None:
                     with suppress(OSError):
                         outcome.media.path.unlink(missing_ok=True)
-                    yield MediaDownloadError(
-                        candidate=candidate,
-                        message=f"duplicate of phash#{duplicate_of} (distance<={threshold})",
-                    )
                     continue
                 kept_hashes.append(outcome.phash)
                 yield outcome.media

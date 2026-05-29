@@ -54,9 +54,16 @@ class TripadvisorHttpClient:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self.rate_limiter = RateLimiter(settings.ta_requests_per_second, settings.ta_request_jitter_seconds)
+        self.image_rate_limiter = RateLimiter(
+            settings.ta_image_requests_per_second,
+            settings.ta_image_request_jitter_seconds,
+        )
         self._proxy = self._initial_proxy()
         self._html_session: Any | None = None
         self._html_session_lock = threading.Lock()
+        self._local = threading.local()
+        self._image_managers: list[Any] = []
+        self._image_session_lock = threading.Lock()
         self._block_statuses: set[int] = settings.browser_block_statuses
         self._sticky_browser = False
 
@@ -72,7 +79,7 @@ class TripadvisorHttpClient:
         return json.loads(body.decode("utf-8", errors="replace"))
 
     def download_bytes(self, url: str, referer: str | None = None) -> tuple[bytes, str]:
-        response = self._with_retries(lambda: self._get_static(url, referer))
+        response = self._with_retries(lambda: self._get_image(url, referer), limiter=self.image_rate_limiter)
         return self._response_bytes(response), self._content_type(response)
 
     def close(self) -> None:
@@ -81,6 +88,14 @@ class TripadvisorHttpClient:
                 with suppress(Exception):
                     self._html_session.close()
                 self._html_session = None
+        with self._image_session_lock:
+            managers = self._image_managers
+            self._image_managers = []
+        for manager in managers:
+            with suppress(Exception):
+                manager.__exit__(None, None, None)
+        self._local.image_client = None
+        self._local.image_manager = None
 
     def __enter__(self) -> TripadvisorHttpClient:
         return self
@@ -90,10 +105,11 @@ class TripadvisorHttpClient:
 
     # --- internals ----------------------------------------------------------
 
-    def _with_retries(self, func: Any) -> Any:
+    def _with_retries(self, func: Any, limiter: RateLimiter | None = None) -> Any:
         last_error: Exception | None = None
+        limiter = limiter or self.rate_limiter
         for attempt in range(self.settings.ta_max_retries + 1):
-            self.rate_limiter.wait()
+            limiter.wait()
             try:
                 return func()
             except BlockedByAntiBotError:
@@ -161,6 +177,48 @@ class TripadvisorHttpClient:
         if status >= 400:
             raise RuntimeError(f"GET {url} returned HTTP {status}")
         return response
+
+    def _get_image(self, url: str, referer: str | None) -> Any:
+        session = self._image_session_handle()
+        response = session.get(
+            url,
+            headers=self._base_headers(referer),
+            proxy=self._proxy if self.settings.ta_image_use_proxy else None,
+            timeout=self.settings.ta_timeout_seconds,
+            stealthy_headers=True,
+            impersonate="chrome",
+            http3=False,
+            follow_redirects=True,
+            retries=1,
+        )
+        status = getattr(response, "status", 200)
+        if status in self._block_statuses:
+            raise BlockedByAntiBotError(url, status)
+        if status >= 400:
+            raise RuntimeError(f"GET {url} returned HTTP {status}")
+        return response
+
+    def _image_session_handle(self) -> Any:
+        session = getattr(self._local, "image_client", None)
+        if session is not None:
+            return session
+        from scrapling.fetchers import FetcherSession
+
+        manager = FetcherSession(
+            proxy=self._proxy if self.settings.ta_image_use_proxy else None,
+            timeout=self.settings.ta_timeout_seconds,
+            stealthy_headers=True,
+            impersonate="chrome",
+            http3=False,
+            follow_redirects=True,
+            retries=1,
+        )
+        session = manager.__enter__()
+        self._local.image_manager = manager
+        self._local.image_client = session
+        with self._image_session_lock:
+            self._image_managers.append(manager)
+        return session
 
     def _post_graphql(self, payload: Any, referer: str) -> Any:
         from scrapling.fetchers import Fetcher

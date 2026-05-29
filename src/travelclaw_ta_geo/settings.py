@@ -14,7 +14,10 @@ class Settings(BaseSettings):
     ta_proxies: str = ""
     ta_detail_concurrency: int = Field(default=4, ge=1, le=32)
     ta_graphql_concurrency: int = Field(default=4, ge=1, le=32)
-    ta_image_concurrency: int = Field(default=16, ge=1, le=64)
+    ta_image_concurrency: int = Field(default=32, ge=1, le=64)
+    ta_image_requests_per_second: float = Field(default=32.0, gt=0, le=200)
+    ta_image_request_jitter_seconds: float = Field(default=0.0, ge=0, le=10)
+    ta_image_use_proxy: bool = False
     ta_r2_concurrency: int = Field(default=10, ge=1, le=64)
     ta_requests_per_second: float = Field(default=1.0, gt=0, le=20)
     ta_request_jitter_seconds: float = Field(default=0.3, ge=0, le=10)

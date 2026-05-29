@@ -127,6 +127,8 @@ uv run travelclaw-ta-geo run --cities g298564 --upload --force
 
 Each `--parallel` worker is its own process with its own browser profile copied
 from `browser/base`, so parallel cities never collide on a locked profile.
+Image downloads have their own throttle: tune `TA_IMAGE_CONCURRENCY` and
+`TA_IMAGE_REQUESTS_PER_SECOND` without raising the HTML/GraphQL request rate.
 
 ### 4. Monitor (separate terminal)
 
