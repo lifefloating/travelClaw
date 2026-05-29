@@ -1,0 +1,25 @@
+{
+  "gallery_status": 200,
+  "gallery_first_photo_node": null,
+  "gallery_count_fields": {},
+  "gallery_total_fields": {},
+  "gallery_container_keys": null,
+  "getMediaByIds_status": 200,
+  "getMediaByIds_body": [
+    {
+      "data": {
+        "Media_getMediaByIds": [
+          {
+            "mediaType": "PHOTO",
+            "photoSizeDynamic": {
+              "maxWidth": 3000,
+              "maxHeight": 2000,
+              "urlTemplate": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/29/02/6b/7b/caption.jpg?w={width}&h={height}&s=1"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "url_template": null
+}

@@ -1,0 +1,67 @@
+{
+  "geo_id": 189952,
+  "total_expected": 2448,
+  "limit_sensitivity_at_off100": [
+    {
+      "offset": 100,
+      "limit": 10,
+      "returned": 10
+    },
+    {
+      "offset": 100,
+      "limit": 20,
+      "returned": 20
+    },
+    {
+      "offset": 100,
+      "limit": 49,
+      "returned": 49
+    },
+    {
+      "offset": 100,
+      "limit": 50,
+      "returned": 50
+    },
+    {
+      "offset": 100,
+      "limit": 51,
+      "returned": 51
+    },
+    {
+      "offset": 100,
+      "limit": 75,
+      "returned": 75
+    },
+    {
+      "offset": 100,
+      "limit": 99,
+      "returned": 99
+    },
+    {
+      "offset": 100,
+      "limit": 100,
+      "returned": 0
+    },
+    {
+      "offset": 100,
+      "limit": 101,
+      "returned": 0
+    },
+    {
+      "offset": 100,
+      "limit": 150,
+      "returned": 0
+    },
+    {
+      "offset": 100,
+      "limit": 200,
+      "returned": 0
+    }
+  ],
+  "full_harvest": {
+    "limit": 50,
+    "pages": 51,
+    "unique_ids": 2449,
+    "coverage_pct": 100.0
+  }
+}

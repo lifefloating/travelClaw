@@ -1,0 +1,67 @@
+{
+  "geo_id": 187147,
+  "total_media_count": 2151397,
+  "deep_offset_spotcheck": [
+    {
+      "offset": 0,
+      "limit": 50,
+      "returned": 50,
+      "first_id": 387280342,
+      "changed_from_prev": true
+    },
+    {
+      "offset": 1000,
+      "limit": 50,
+      "returned": 50,
+      "first_id": 410985870,
+      "changed_from_prev": true
+    },
+    {
+      "offset": 2000,
+      "limit": 50,
+      "returned": 50,
+      "first_id": 322948906,
+      "changed_from_prev": true
+    },
+    {
+      "offset": 4000,
+      "limit": 50,
+      "returned": 0,
+      "first_id": null,
+      "changed_from_prev": null
+    },
+    {
+      "offset": 6000,
+      "limit": 50,
+      "returned": 0,
+      "first_id": null,
+      "changed_from_prev": null
+    },
+    {
+      "offset": 8000,
+      "limit": 50,
+      "returned": 0,
+      "first_id": null,
+      "changed_from_prev": null
+    },
+    {
+      "offset": 9000,
+      "limit": 50,
+      "returned": 0,
+      "first_id": null,
+      "changed_from_prev": null
+    }
+  ],
+  "deep_limit_bug_check": [
+    {
+      "offset": 5000,
+      "limit": 99,
+      "returned": 0
+    },
+    {
+      "offset": 5000,
+      "limit": 100,
+      "returned": 0
+    }
+  ]
+}

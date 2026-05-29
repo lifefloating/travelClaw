@@ -1,0 +1,163 @@
+{
+  "geo_id": 189952,
+  "total_expected": 2448,
+  "runs": [
+    {
+      "query": "e451",
+      "qid": "e451fc43b6a61cab",
+      "limit": 20,
+      "cumulative_unique": 180,
+      "per_offset": [
+        {
+          "offset": 0,
+          "returned": 20,
+          "new_unique": 20,
+          "first_id": 456389502,
+          "last_id": 379916567
+        },
+        {
+          "offset": 20,
+          "returned": 20,
+          "new_unique": 20,
+          "first_id": 363977089,
+          "last_id": 277093903
+        },
+        {
+          "offset": 40,
+          "returned": 20,
+          "new_unique": 20,
+          "first_id": 393281806,
+          "last_id": 403523683
+        },
+        {
+          "offset": 60,
+          "returned": 20,
+          "new_unique": 20,
+          "first_id": 409939436,
+          "last_id": 173683863
+        },
+        {
+          "offset": 80,
+          "returned": 20,
+          "new_unique": 20,
+          "first_id": 277401379,
+          "last_id": 397871119
+        },
+        {
+          "offset": 100,
+          "returned": 20,
+          "new_unique": 20,
+          "first_id": 68685558,
+          "last_id": 168593079
+        },
+        {
+          "offset": 120,
+          "returned": 20,
+          "new_unique": 20,
+          "first_id": 410731814,
+          "last_id": 429617837
+        },
+        {
+          "offset": 140,
+          "returned": 20,
+          "new_unique": 20,
+          "first_id": 111220226,
+          "last_id": 151138699
+        },
+        {
+          "offset": 160,
+          "returned": 20,
+          "new_unique": 20,
+          "first_id": 310078114,
+          "last_id": 182785924
+        }
+      ]
+    },
+    {
+      "query": "e451",
+      "qid": "e451fc43b6a61cab",
+      "limit": 50,
+      "cumulative_unique": 300,
+      "per_offset": [
+        {
+          "offset": 0,
+          "returned": 50,
+          "new_unique": 50,
+          "first_id": 456389502,
+          "last_id": 318021671
+        },
+        {
+          "offset": 50,
+          "returned": 50,
+          "new_unique": 50,
+          "first_id": 369406779,
+          "last_id": 397871119
+        },
+        {
+          "offset": 100,
+          "returned": 50,
+          "new_unique": 50,
+          "first_id": 68685558,
+          "last_id": 197044474
+        },
+        {
+          "offset": 150,
+          "returned": 50,
+          "new_unique": 50,
+          "first_id": 275764628,
+          "last_id": 278354779
+        },
+        {
+          "offset": 200,
+          "returned": 50,
+          "new_unique": 50,
+          "first_id": 369836262,
+          "last_id": 406055216
+        },
+        {
+          "offset": 250,
+          "returned": 50,
+          "new_unique": 50,
+          "first_id": 189401571,
+          "last_id": 272984900
+        }
+      ]
+    },
+    {
+      "query": "mediaAlbum",
+      "qid": "1e729d38f07a88bf",
+      "limit": 100,
+      "cumulative_unique": 10,
+      "per_offset": [
+        {
+          "offset": 0,
+          "returned": 10,
+          "new_unique": 10,
+          "first_id": 456389502,
+          "last_id": 389217933
+        },
+        {
+          "offset": 50,
+          "returned": 10,
+          "new_unique": 0,
+          "first_id": 456389502,
+          "last_id": 389217933
+        },
+        {
+          "offset": 100,
+          "returned": 10,
+          "new_unique": 0,
+          "first_id": 456389502,
+          "last_id": 389217933
+        },
+        {
+          "offset": 200,
+          "returned": 10,
+          "new_unique": 0,
+          "first_id": 456389502,
+          "last_id": 389217933
+        }
+      ]
+    }
+  ]
+}

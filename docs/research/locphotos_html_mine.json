@@ -1,0 +1,47 @@
+{
+  "url": "https://www.tripadvisor.com/LocationPhotos-g189952-Iceland.html",
+  "status": 200,
+  "html_len": 244443,
+  "title": " Iceland Photos - Featured Images of Iceland, Europe - Tripadvisor ",
+  "count_phrases": [
+    ", photos",
+    ", photo"
+  ],
+  "of_phrases": [
+    "9 of 5",
+    "6 of 5",
+    "6 of 4,153",
+    "5 of 5"
+  ],
+  "query_id_freq": [
+    [
+      "0011158526f49765",
+      1
+    ],
+    [
+      "838cf7444e996778",
+      1
+    ]
+  ],
+  "photo_path_count": 14,
+  "photo_path_unique": 8,
+  "photo_path_sample": [
+    "1a/f6/f0/d5/default-avatar-2020-17.jpg",
+    "01/38/44/82/caption.jpg",
+    "01/2b/da/1f/blue-lagoon.jpg",
+    "01/25/81/4f/ljosifoss-in-hallormsstaoaskogur.jpg",
+    "01/25/4d/4d/beautiful-iceland.jpg",
+    "01/24/88/be/colorful-iceland.jpg",
+    "1a/cf/44/98/looking-from-our-cow.jpg",
+    "14/de/47/b6/waterfall-nearby.jpg"
+  ],
+  "numeric_id_count": 0,
+  "numeric_id_unique": 0,
+  "numeric_id_sample": [],
+  "url_template_count": 1,
+  "url_template_sample": [
+    "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1a/f6/f0/d5/default-avatar-2020-17.jpg?w={width}&h={height}&s=1"
+  ],
+  "has_window_state": false,
+  "preloaded_markers": []
+}

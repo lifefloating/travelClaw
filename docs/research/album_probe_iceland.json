@@ -1,0 +1,120 @@
+{
+  "geo_id": 189952,
+  "tests": [
+    {
+      "label": "e451/album101/off0/lim100",
+      "status": 200,
+      "photo_nodes": 196,
+      "totals": {},
+      "sample_ids": [
+        456389502,
+        675960214,
+        396617570,
+        25399820,
+        19171518
+      ],
+      "has_errors": false
+    },
+    {
+      "label": "e451/album101/off100/lim100",
+      "status": 200,
+      "photo_nodes": 0,
+      "totals": {},
+      "sample_ids": [],
+      "has_errors": false,
+      "body_head": "[{\"data\": {\"mediaAlbumPage\": [{\"status\": 500, \"statusMessage\": \"Unexpected exception encountered. for request: class PageRequest {\\n    locationId: 189952\\n    albumId: 101\\n    subAlbumId: 101\\n    displayStrategy: null\\n    dataStrategy: geo\\n    client: t\\n    locale: en_US\\n    page: class PageR"
+    },
+    {
+      "label": "e451/album101/off200/lim100",
+      "status": 200,
+      "photo_nodes": 0,
+      "totals": {},
+      "sample_ids": [],
+      "has_errors": false,
+      "body_head": "[{\"data\": {\"mediaAlbumPage\": [{\"status\": 500, \"statusMessage\": \"Unexpected exception encountered. for request: class PageRequest {\\n    locationId: 189952\\n    albumId: 101\\n    subAlbumId: 101\\n    displayStrategy: null\\n    dataStrategy: geo\\n    client: t\\n    locale: en_US\\n    page: class PageR"
+    },
+    {
+      "label": "e451/album101/off500/lim100",
+      "status": 200,
+      "photo_nodes": 0,
+      "totals": {},
+      "sample_ids": [],
+      "has_errors": false,
+      "body_head": "[{\"data\": {\"mediaAlbumPage\": [{\"status\": 500, \"statusMessage\": \"Unexpected exception encountered. for request: class PageRequest {\\n    locationId: 189952\\n    albumId: 101\\n    subAlbumId: 101\\n    displayStrategy: null\\n    dataStrategy: geo\\n    client: t\\n    locale: en_US\\n    page: class PageR"
+    },
+    {
+      "label": "e451/album101/off0/lim500",
+      "status": 200,
+      "photo_nodes": 0,
+      "totals": {},
+      "sample_ids": [],
+      "has_errors": false,
+      "body_head": "[{\"data\": {\"mediaAlbumPage\": [{\"status\": 500, \"statusMessage\": \"Unexpected exception encountered. for request: class PageRequest {\\n    locationId: 189952\\n    albumId: 101\\n    subAlbumId: 101\\n    displayStrategy: null\\n    dataStrategy: geo\\n    client: t\\n    locale: en_US\\n    page: class PageR"
+    },
+    {
+      "label": "e451/album102/off0/lim100",
+      "status": 200,
+      "photo_nodes": 196,
+      "totals": {},
+      "sample_ids": [
+        456389502,
+        675960214,
+        396617570,
+        25399820,
+        19171518
+      ],
+      "has_errors": false
+    },
+    {
+      "label": "e451/album103/off0/lim100",
+      "status": 200,
+      "photo_nodes": 196,
+      "totals": {},
+      "sample_ids": [
+        456389502,
+        675960214,
+        396617570,
+        25399820,
+        19171518
+      ],
+      "has_errors": false
+    },
+    {
+      "label": "e451/album1/off0/lim100",
+      "status": 200,
+      "photo_nodes": 196,
+      "totals": {},
+      "sample_ids": [
+        456389502,
+        675960214,
+        396617570,
+        25399820,
+        19171518
+      ],
+      "has_errors": false
+    },
+    {
+      "label": "e451/album100/off0/lim100",
+      "status": 200,
+      "photo_nodes": 196,
+      "totals": {},
+      "sample_ids": [
+        456389502,
+        675960214,
+        396617570,
+        25399820,
+        19171518
+      ],
+      "has_errors": false
+    },
+    {
+      "label": "getMediaByIds/da600",
+      "status": 200,
+      "photo_nodes": 0,
+      "totals": {},
+      "sample_ids": [],
+      "has_errors": false,
+      "body_head": "[{\"data\": {\"Media_getMediaByIds\": [{\"mediaType\": \"PHOTO\", \"photoSizeDynamic\": {\"maxWidth\": 3000, \"maxHeight\": 2000, \"urlTemplate\": \"https://dynamic-media-cdn.tripadvisor.com/media/photo-o/29/02/6b/7b/caption.jpg?w={width}&h={height}&s=1\"}}]}}]"
+    }
+  ]
+}
