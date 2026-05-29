@@ -35,9 +35,8 @@ class NdjsonWriter:
             self._handle = self.path.open("a", encoding="utf-8")
         return self._handle
 
-    def __enter__(self) -> "NdjsonWriter":
+    def __enter__(self) -> NdjsonWriter:
         return self
 
     def __exit__(self, *_exc: object) -> None:
         self.close()
-

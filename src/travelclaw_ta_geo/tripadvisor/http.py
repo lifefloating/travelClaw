@@ -5,6 +5,7 @@ import random
 import threading
 import time
 import uuid
+from contextlib import suppress
 from pathlib import Path
 from typing import Any
 
@@ -77,13 +78,11 @@ class TripadvisorHttpClient:
     def close(self) -> None:
         with self._html_session_lock:
             if self._html_session is not None:
-                try:
+                with suppress(Exception):
                     self._html_session.close()
-                except Exception:
-                    pass
                 self._html_session = None
 
-    def __enter__(self) -> "TripadvisorHttpClient":
+    def __enter__(self) -> TripadvisorHttpClient:
         return self
 
     def __exit__(self, *_: Any) -> None:

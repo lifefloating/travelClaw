@@ -4,10 +4,8 @@ import gzip
 import hashlib
 import json
 from pathlib import Path
-from typing import Any
 
 from travelclaw_ta_geo.settings import Settings
-
 
 _JUNK_FILENAMES = {".DS_Store", "Thumbs.db", "desktop.ini"}
 
@@ -44,15 +42,15 @@ def file_kind(relative_path: str) -> str:
     raise ValueError(f"unsupported package file path: {relative_path}")
 
 
-def build_manifest(settings: Settings, package_dir: Path, delivered_at: str, notes: str = "") -> dict[str, Any]:
-    files: list[dict[str, Any]] = []
+def build_manifest(settings: Settings, package_dir: Path, delivered_at: str, notes: str = "") -> dict[str, object]:
+    files: list[dict[str, object]] = []
     for path in sorted(package_dir.rglob("*")):
         if not path.is_file() or path.name in {"manifest.json", "_READY"}:
             continue
         if is_junk_file(path):
             continue
         relative = path.relative_to(package_dir).as_posix()
-        entry: dict[str, Any] = {
+        entry: dict[str, object] = {
             "path": relative,
             "kind": file_kind(relative),
             "sha256": sha256_file(path),
@@ -62,7 +60,7 @@ def build_manifest(settings: Settings, package_dir: Path, delivered_at: str, not
             entry["row_count"] = count_gzip_ndjson(path)
         files.append(entry)
 
-    manifest: dict[str, Any] = {
+    manifest: dict[str, object] = {
         "vendor_id": settings.vendor_id,
         "focus": settings.focus,
         "source": settings.source,
@@ -78,6 +76,5 @@ def build_manifest(settings: Settings, package_dir: Path, delivered_at: str, not
     return manifest
 
 
-def write_manifest(path: Path, manifest: dict[str, Any]) -> None:
+def write_manifest(path: Path, manifest: dict[str, object]) -> None:
     path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=False) + "\n", encoding="utf-8")
-
