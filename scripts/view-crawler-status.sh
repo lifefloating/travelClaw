@@ -3,20 +3,23 @@ set -euo pipefail
 
 usage() {
     cat <<'EOF'
-Usage: scripts/view-crawler-status.sh [--data-root PATH] [--watch SECONDS]
+Usage: scripts/view-crawler-status.sh [--data-root PATH] [--watch SECONDS] [--once]
 
 Show a concise crawler status table from <DATA_ROOT>/status/*.json.
+By default, refresh every 5 seconds until interrupted.
 
 Options:
   --data-root PATH  Override DATA_ROOT. Defaults to DATA_ROOT env, then .env,
                     then /data/city_geo.
   --watch SECONDS   Refresh the table every SECONDS until interrupted.
+  --once            Print a single snapshot and exit.
   -h, --help        Show this help.
 EOF
 }
 
 data_root="${DATA_ROOT:-}"
-watch_seconds=""
+watch_seconds="${CRAWLER_STATUS_INTERVAL:-5}"
+once=0
 
 while (($#)); do
     case "$1" in
@@ -35,6 +38,10 @@ while (($#)); do
                 exit 2
             fi
             shift 2
+            ;;
+        --once)
+            once=1
+            shift
             ;;
         -h|--help)
             usage
@@ -63,6 +70,11 @@ if [[ -z "$data_root" && -f .env ]]; then
 fi
 
 data_root="${data_root:-/data/city_geo}"
+
+if [[ "$once" -eq 0 && ! "$watch_seconds" =~ ^[1-9][0-9]*$ ]]; then
+    echo "watch interval must be a positive integer" >&2
+    exit 2
+fi
 
 render() {
     python3 - "$data_root" <<'PY'
@@ -146,9 +158,11 @@ for row in rows:
 PY
 }
 
-if [[ -n "$watch_seconds" ]]; then
+if [[ "$once" -eq 0 ]]; then
     while true; do
-        clear
+        if [[ -t 1 ]]; then
+            clear
+        fi
         render
         sleep "$watch_seconds"
     done
