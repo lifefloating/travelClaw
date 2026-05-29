@@ -1,12 +1,54 @@
 from __future__ import annotations
 
 import hashlib
+import re
+from html.parser import HTMLParser
 from typing import Any
+from urllib.parse import urlparse
 
 from travelclaw_ta_geo.settings import Settings
 from travelclaw_ta_geo.tripadvisor.http import TripadvisorHttpClient
 from travelclaw_ta_geo.tripadvisor.models import GeoPage, MediaCandidate
-from travelclaw_ta_geo.tripadvisor.parsing import clean_text, iter_dicts
+from travelclaw_ta_geo.tripadvisor.parsing import absolute_tripadvisor_url, clean_text, iter_dicts, normalize_image_url
+
+LOCATION_PHOTOS_RANGE_RE = re.compile(r"\b(?P<start>\d[\d,]*)\s*-\s*(?P<end>\d[\d,]*)\s+of\s+(?P<total>\d[\d,]*)\b")
+TOURISM_TO_PHOTOS_RE = re.compile(r"/Tourism-g(?P<geo_id>\d+)-(?P<slug>.+?)-Vacations\.html")
+PHOTO_VARIANT_RE = re.compile(r"/media/photo-[^/]+/")
+
+
+class _LocationPhotosParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.images: list[dict[str, str]] = []
+        self.hrefs: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attr_map = {key.lower(): value or "" for key, value in attrs}
+        if tag.lower() == "a":
+            href = attr_map.get("href", "").strip()
+            if href:
+                self.hrefs.append(href)
+            return
+        if tag.lower() != "img":
+            return
+
+        urls: list[str] = []
+        for key in ("src", "data-src", "data-lazyurl", "data-original"):
+            value = attr_map.get(key, "").strip()
+            if value:
+                urls.append(value)
+        srcset = attr_map.get("srcset", "").strip()
+        if srcset:
+            urls.extend(part.strip().split(" ", 1)[0] for part in srcset.split(",") if part.strip())
+
+        for url in urls:
+            self.images.append(
+                {
+                    "url": url,
+                    "alt": attr_map.get("alt", ""),
+                    "class": attr_map.get("class", ""),
+                }
+            )
 
 
 class TripadvisorGraphQL:
@@ -63,6 +105,22 @@ class TripadvisorGraphQL:
             if new_count == 0 or len(extracted) < limit:
                 break
             offset += limit
+
+        if len(candidates) < max_images:
+            graphql_summary = dict(last_response_summary)
+            location_items, location_summary = self._location_photos_media(
+                page,
+                max_images=max_images - len(candidates),
+                seen=seen,
+            )
+            candidates.extend(location_items)
+            if location_summary:
+                last_response_summary = {
+                    "source": "graphql+location_photos" if graphql_summary else "location_photos",
+                    "graphql": graphql_summary,
+                    "location_photos": location_summary,
+                    "candidates_returned": len(candidates),
+                }
         return candidates, last_response_summary
 
     def _extract_media(self, response: Any, geo_id: int) -> list[MediaCandidate]:
@@ -161,6 +219,162 @@ class TripadvisorGraphQL:
                 if value is not None and value >= 0:
                     return value
         return None
+
+    def _location_photos_media(
+        self,
+        page: GeoPage,
+        *,
+        max_images: int,
+        seen: set[str],
+    ) -> tuple[list[MediaCandidate], dict[str, Any]]:
+        first_url = self._location_photos_url(page)
+        if max_images <= 0 or not first_url:
+            return [], {}
+
+        candidates: list[MediaCandidate] = []
+        current_url = first_url
+        visited: set[str] = set()
+        total_available: int | None = None
+        pages_fetched = 0
+        items_seen = 0
+
+        while current_url and current_url not in visited and len(candidates) < max_images:
+            visited.add(current_url)
+            html_text = self.client.get_html(current_url, referer=page.canonical_url or page.url)
+            parser = self._parse_location_photos_html(html_text)
+            pages_fetched += 1
+            total_available = total_available or self._extract_location_photos_total(html_text)
+
+            extracted = self._extract_location_photo_media(
+                parser,
+                geo_id=page.geo_id,
+                source_page_url=current_url,
+            )
+            items_seen += len(extracted)
+            new_count = 0
+            for item in extracted:
+                if item.dedupe_key in seen:
+                    continue
+                seen.add(item.dedupe_key)
+                candidates.append(item)
+                new_count += 1
+                if len(candidates) >= max_images:
+                    break
+
+            if len(candidates) >= max_images or new_count == 0:
+                break
+            current_url = self._next_location_photos_url(parser, current_url, page.geo_id)
+
+        return candidates, {
+            "first_url": first_url,
+            "pages_fetched": pages_fetched,
+            "items_seen": items_seen,
+            "items_added": len(candidates),
+            "total_photo_count": total_available,
+        }
+
+    def _location_photos_url(self, page: GeoPage) -> str:
+        for candidate in (page.canonical_url, page.url):
+            if not candidate:
+                continue
+            parsed = urlparse(candidate)
+            path = parsed.path
+            if "/LocationPhotos-" in path:
+                return candidate
+            match = TOURISM_TO_PHOTOS_RE.search(path)
+            if match and int(match.group("geo_id")) == page.geo_id:
+                slug = match.group("slug")
+                return f"{self.settings.base_url}/LocationPhotos-g{page.geo_id}-{slug}.html"
+        return ""
+
+    @staticmethod
+    def _parse_location_photos_html(html_text: str) -> _LocationPhotosParser:
+        parser = _LocationPhotosParser()
+        parser.feed(html_text)
+        return parser
+
+    def _extract_location_photo_media(
+        self,
+        parser: _LocationPhotosParser,
+        *,
+        geo_id: int,
+        source_page_url: str,
+    ) -> list[MediaCandidate]:
+        items: list[MediaCandidate] = []
+        seen_ids: set[str] = set()
+        for image in parser.images:
+            candidate = self._location_photo_candidate(image, geo_id, source_page_url)
+            if candidate is None or candidate.media_id in seen_ids:
+                continue
+            seen_ids.add(candidate.media_id)
+            items.append(candidate)
+        return items
+
+    def _location_photo_candidate(
+        self,
+        image: dict[str, str],
+        geo_id: int,
+        source_page_url: str,
+    ) -> MediaCandidate | None:
+        raw_url = image.get("url", "")
+        if "/media/photo-" not in raw_url or "tripadvisor.com/media/photo-" not in raw_url:
+            return None
+        url = normalize_image_url(raw_url, default_side=self.settings.ta_download_side)
+        url = PHOTO_VARIANT_RE.sub("/media/photo-o/", url, count=1)
+        media_id = self._location_photo_id(url)
+        if not media_id:
+            return None
+        return MediaCandidate(
+            media_id=f"location_photo:{media_id}",
+            url=url,
+            source_url=url,
+            caption=clean_text(image.get("alt", "")),
+            source_kind="location_photos",
+            raw={
+                "geo_id": geo_id,
+                "source_page_url": source_page_url,
+                "original_url": raw_url,
+                "class": image.get("class", ""),
+            },
+        )
+
+    @staticmethod
+    def _location_photo_id(url: str) -> str:
+        path = urlparse(url).path
+        marker = "/media/photo-"
+        index = path.find(marker)
+        if index == -1:
+            return ""
+        parts = path[index + len(marker) :].split("/", 1)
+        if len(parts) != 2:
+            return ""
+        return parts[1].rsplit(".", 1)[0].replace("/", "-")
+
+    @staticmethod
+    def _extract_location_photos_total(html_text: str) -> int | None:
+        text = clean_text(re.sub(r"<[^>]+>", " ", html_text))
+        match = LOCATION_PHOTOS_RANGE_RE.search(text)
+        if not match:
+            return None
+        return _int_or_none(match.group("total").replace(",", ""))
+
+    def _next_location_photos_url(
+        self,
+        parser: _LocationPhotosParser,
+        current_url: str,
+        geo_id: int,
+    ) -> str:
+        next_page = self._location_photos_page_number(current_url) + 1
+        wanted = f"-w{next_page}-"
+        for href in parser.hrefs:
+            if f"LocationPhotos-g{geo_id}" in href and wanted in href:
+                return absolute_tripadvisor_url(self.settings.base_url, href)
+        return ""
+
+    @staticmethod
+    def _location_photos_page_number(url: str) -> int:
+        match = re.search(r"-w(?P<page>\d+)-", url)
+        return int(match.group("page")) if match else 1
 
 
 def _int_or_none(value: Any) -> int | None:
