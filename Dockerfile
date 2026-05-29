@@ -12,6 +12,7 @@ ENV PYTHONUNBUFFERED=1 \
 # shared-library deps are installed by `scrapling install` (playwright install-deps).
 RUN apt-get update && apt-get install -y --no-install-recommends \
         xvfb \
+        xauth \
         ca-certificates \
         fonts-liberation \
         fonts-noto-cjk \

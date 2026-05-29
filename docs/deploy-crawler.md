@@ -74,6 +74,19 @@ docker compose build
 
 镜像包含 Python 依赖和 Chromium。图片去重使用轻量的 `ImageHash` PHash 实现，避免拉入 `torch` / NVIDIA / CUDA 依赖。Dockerfile 已清理 `uv` 安装缓存，避免额外打进去一份依赖缓存。
 
+如果执行 `docker compose run --rm preheat` 报：
+
+```text
+xvfb-run: error: xauth command not found
+```
+
+说明当前 VPS 上的镜像是旧版本，里面缺少 `xvfb-run` 运行所需的 `xauth` 系统包。拉到包含修复的代码后重新构建：
+
+```bash
+docker compose build --no-cache crawler
+docker compose run --rm preheat
+```
+
 ## 预热浏览器 profile
 
 每台新 VPS 第一次正式爬取前先预热：
@@ -159,6 +172,31 @@ tmux attach -t ta-crawl
 mkdir -p /data/city_geo/logs
 nohup docker compose run --rm crawler run --all --parallel 4 --upload \
   > /data/city_geo/logs/crawler.log 2>&1 &
+```
+
+## 查看全部日志
+
+仓库里提供了一个宿主机侧脚本，用来一次性汇总常用诊断信息：
+
+```bash
+chmod +x scripts/view-crawler-logs.sh
+scripts/view-crawler-logs.sh
+```
+
+脚本默认按顺序输出：
+
+- `docker compose ps -a`
+- 当前 compose 项目下每个容器的 `docker logs --tail 200`
+- `/data/city_geo/logs/*.log`
+- `/data/city_geo/status/*.json`
+- `/data/city_geo/raw/*/errors.ndjson`
+
+注意：`docker compose run --rm` 结束后容器会被删除，Docker 不会继续保留这次 stdout。正式长跑建议用上面的 `tmux` 方式保持会话，或者用 `nohup ... > /data/city_geo/logs/crawler.log 2>&1 &` 写入宿主机日志文件。
+
+如果 `.env` 里的 `DATA_ROOT` 不是 `/data/city_geo`，脚本会自动读取 `.env`。也可以手动指定：
+
+```bash
+scripts/view-crawler-logs.sh --data-root /data/city_geo --tail 500
 ```
 
 ## 只跑指定城市
