@@ -114,9 +114,27 @@ def run_city(
             try:
                 media_candidates, gallery_meta = crawler.graphql.gallery_media(page, max_images)
             except Exception as exc:
+                # gallery_media now retains partial results internally, so this only
+                # fires on a truly unexpected failure (not a single bad page).
                 msg = f"gallery GraphQL failed for g{page.geo_id}: {exc}"
                 error_writer.write(_error_row(seed, "geo_warning", msg, page.url))
                 error_rows += 1
+            # Surface partial-harvest errors: a page failed mid-pagination but we
+            # kept what we had, so the geo isn't lost — just incomplete. Record it
+            # so an incomplete city is visible rather than silently short.
+            for stage_key in ("album", "review_photos"):
+                stage_meta = gallery_meta.get(stage_key)
+                if isinstance(stage_meta, dict) and stage_meta.get("error"):
+                    error_writer.write(
+                        _error_row(
+                            seed,
+                            "geo_warning",
+                            f"gallery {stage_key} incomplete for g{page.geo_id} "
+                            f"({len(media_candidates)} kept): {stage_meta['error']}",
+                            page.url,
+                        )
+                    )
+                    error_rows += 1
 
         geo_record = build_geo_record(page, captured_at, settings, gallery_meta)
         geo_writer.write(geo_record)

@@ -21,6 +21,25 @@ class Settings(BaseSettings):
     ta_max_retries: int = Field(default=3, ge=0, le=10)
     ta_timeout_seconds: int = Field(default=30, ge=5, le=180)
     ta_gallery_query_id: str = "e451fc43b6a61cab"
+    # mediaAlbumPage returns an EMPTY list when limit >= 100 (a TripAdvisor edge
+    # bug), so each page silently "topped out" at offset 100 and we only ever got
+    # ~100 images per geo. Any value <= 99 paginates correctly; 50 is the sweet
+    # spot (full coverage, moderate per-page payload). See docs/research/
+    # tripadvisor_gallery_pagination_findings.md §1-§2.
+    ta_gallery_page_limit: int = Field(default=50, ge=1, le=99)
+    # The album exposes only ~2550 photos/geo regardless of totalMediaCount (a
+    # multi-million UI aggregate that is never reachable). We stop on consecutive
+    # empty pages, but cap the offset as a backstop against pointless empty paging.
+    ta_gallery_offset_ceiling: int = Field(default=3000, ge=100, le=100000)
+    # Number of consecutive empty pages tolerated before declaring the album done.
+    ta_gallery_empty_page_stop: int = Field(default=2, ge=1, le=10)
+    # OPT-IN review-photo supplement (A3). The official album tops out at ~2550;
+    # to approach larger targets we can merge user-uploaded review photos. This is
+    # INERT until a real reviewListPage preRegisteredQueryId is supplied (capture
+    # it from a live Reviews page via F12 -> /data/graphql/ids). See findings §8.
+    ta_review_photos_query_id: str = ""
+    ta_review_page_limit: int = Field(default=20, ge=1, le=20)
+    ta_review_offset_ceiling: int = Field(default=20000, ge=0, le=200000)
     ta_locale: str = "en-US"
     ta_timezone: str = "America/New_York"
     ta_html_browser_fallback: bool = True

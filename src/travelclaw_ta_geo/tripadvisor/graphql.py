@@ -1,54 +1,12 @@
 from __future__ import annotations
 
 import hashlib
-import re
-from html.parser import HTMLParser
 from typing import Any
-from urllib.parse import urlparse
 
 from travelclaw_ta_geo.settings import Settings
 from travelclaw_ta_geo.tripadvisor.http import TripadvisorHttpClient
 from travelclaw_ta_geo.tripadvisor.models import GeoPage, MediaCandidate
-from travelclaw_ta_geo.tripadvisor.parsing import absolute_tripadvisor_url, clean_text, iter_dicts, normalize_image_url
-
-LOCATION_PHOTOS_RANGE_RE = re.compile(r"\b(?P<start>\d[\d,]*)\s*-\s*(?P<end>\d[\d,]*)\s+of\s+(?P<total>\d[\d,]*)\b")
-TOURISM_TO_PHOTOS_RE = re.compile(r"/Tourism-g(?P<geo_id>\d+)-(?P<slug>.+?)-Vacations\.html")
-PHOTO_VARIANT_RE = re.compile(r"/media/photo-[^/]+/")
-
-
-class _LocationPhotosParser(HTMLParser):
-    def __init__(self) -> None:
-        super().__init__(convert_charrefs=True)
-        self.images: list[dict[str, str]] = []
-        self.hrefs: list[str] = []
-
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        attr_map = {key.lower(): value or "" for key, value in attrs}
-        if tag.lower() == "a":
-            href = attr_map.get("href", "").strip()
-            if href:
-                self.hrefs.append(href)
-            return
-        if tag.lower() != "img":
-            return
-
-        urls: list[str] = []
-        for key in ("src", "data-src", "data-lazyurl", "data-original"):
-            value = attr_map.get(key, "").strip()
-            if value:
-                urls.append(value)
-        srcset = attr_map.get("srcset", "").strip()
-        if srcset:
-            urls.extend(part.strip().split(" ", 1)[0] for part in srcset.split(",") if part.strip())
-
-        for url in urls:
-            self.images.append(
-                {
-                    "url": url,
-                    "alt": attr_map.get("alt", ""),
-                    "class": attr_map.get("class", ""),
-                }
-            )
+from travelclaw_ta_geo.tripadvisor.parsing import clean_text, iter_dicts
 
 
 class TripadvisorGraphQL:
@@ -57,14 +15,61 @@ class TripadvisorGraphQL:
         self.client = client
 
     def gallery_media(self, page: GeoPage, max_images: int) -> tuple[list[MediaCandidate], dict[str, Any]]:
+        """Harvest geo gallery photos via mediaAlbumPage, optionally topped up with
+        review photos. Returns up to max_images deduped candidates plus a summary.
+
+        See docs/research/tripadvisor_gallery_pagination_findings.md for the why:
+        the album caps at ~2550 photos/geo and limit>=100 returns empty, so we
+        page with limit<=99 and stop on consecutive empty pages."""
         candidates: list[MediaCandidate] = []
         seen: set[str] = set()
-        offset = 0
-        limit = min(100, max(1, max_images))
-        total_count: int | None = None
-        last_response_summary: dict[str, Any] = {}
 
-        while len(candidates) < max_images:
+        gallery_summary = self._album_media(page, max_images=max_images, candidates=candidates, seen=seen)
+
+        review_summary: dict[str, Any] = {}
+        if len(candidates) < max_images:
+            review_summary = self._review_photos_media(
+                page,
+                max_images=max_images - len(candidates),
+                candidates=candidates,
+                seen=seen,
+            )
+
+        summary: dict[str, Any] = {
+            "source": "album+review" if review_summary else "album",
+            "album": gallery_summary,
+            "candidates_returned": len(candidates),
+        }
+        if review_summary:
+            summary["review_photos"] = review_summary
+        return candidates, summary
+
+    def _album_media(
+        self,
+        page: GeoPage,
+        *,
+        max_images: int,
+        candidates: list[MediaCandidate],
+        seen: set[str],
+    ) -> dict[str, Any]:
+        """Page the official mediaAlbumPage album, appending new photos in place.
+
+        Termination: consecutive empty pages (the album's real end signal) or the
+        offset ceiling — NOT totalMediaCount, which is a multi-million UI aggregate
+        the album can never page to."""
+        query_id = page.gallery_query_id or self.settings.ta_gallery_query_id
+        limit = min(self.settings.ta_gallery_page_limit, max(1, max_images))
+        ceiling = self.settings.ta_gallery_offset_ceiling
+        empty_stop = self.settings.ta_gallery_empty_page_stop
+
+        offset = 0
+        total_count: int | None = None
+        pages_fetched = 0
+        items_seen = 0
+        empty_streak = 0
+        error: str | None = None
+
+        while len(candidates) < max_images and offset <= ceiling:
             payload = [
                 {
                     "variables": {
@@ -74,54 +79,74 @@ class TripadvisorGraphQL:
                         "dataStrategy": "geo",
                         "filter": {
                             "mediaGroup": "ALL_INCLUDING_RESTRICTED",
-                            "mediaTypes": ["PHOTO", "PHOTO_360", "VIDEO"],
+                            # PHOTO only (user wants no video). PHOTO_360 kept as a
+                            # still image; VIDEO dropped per findings §6.
+                            "mediaTypes": ["PHOTO", "PHOTO_360"],
                         },
                         "subAlbumId": 101,
                         "offset": offset,
                         "limit": limit,
                     },
-                    "extensions": {"preRegisteredQueryId": page.gallery_query_id or self.settings.ta_gallery_query_id},
+                    "extensions": {"preRegisteredQueryId": query_id},
                 }
             ]
-            response = self.client.post_graphql(payload, referer=page.canonical_url or page.url)
-            extracted = self._extract_media(response, page.geo_id)
-            total_count = total_count or self._extract_total_count(response)
-            last_response_summary = {
-                "query_id": page.gallery_query_id or self.settings.ta_gallery_query_id,
-                "offset": offset,
-                "limit": limit,
-                "total_media_count": total_count,
-                "items_seen": len(extracted),
-            }
-            new_count = 0
-            for item in extracted:
-                if item.dedupe_key in seen:
-                    continue
-                seen.add(item.dedupe_key)
-                candidates.append(item)
-                new_count += 1
-                if len(candidates) >= max_images:
-                    break
-            if new_count == 0 or len(extracted) < limit:
+            try:
+                response = self.client.post_graphql(payload, referer=page.canonical_url or page.url)
+                extracted = self._extract_media(response, page.geo_id)
+            except Exception as exc:
+                # A single failed page (after the HTTP layer's own retries) must NOT
+                # discard the photos already harvested. Stop paging and return what
+                # we have; the error is recorded in the summary for the geo row.
+                error = f"album page offset={offset} failed: {exc}"
                 break
+            total_count = total_count if total_count is not None else self._extract_total_count(response)
+            pages_fetched += 1
+            items_seen += len(extracted)
+
+            # Append in place; termination is driven by empty pages, not new_count.
+            self._append_new(extracted, candidates, seen, max_images)
+
+            if not extracted:
+                empty_streak += 1
+                if empty_streak >= empty_stop:
+                    break
+            else:
+                empty_streak = 0
             offset += limit
 
-        if len(candidates) < max_images:
-            graphql_summary = dict(last_response_summary)
-            location_items, location_summary = self._location_photos_media(
-                page,
-                max_images=max_images - len(candidates),
-                seen=seen,
-            )
-            candidates.extend(location_items)
-            if location_summary:
-                last_response_summary = {
-                    "source": "graphql+location_photos" if graphql_summary else "location_photos",
-                    "graphql": graphql_summary,
-                    "location_photos": location_summary,
-                    "candidates_returned": len(candidates),
-                }
-        return candidates, last_response_summary
+        summary: dict[str, Any] = {
+            "query_id": query_id,
+            "limit": limit,
+            "offset_ceiling": ceiling,
+            "last_offset": offset,
+            "pages_fetched": pages_fetched,
+            "total_media_count": total_count,
+            "items_seen": items_seen,
+            "items_added": len(candidates),
+        }
+        if error:
+            summary["error"] = error
+        return summary
+
+    @staticmethod
+    def _append_new(
+        extracted: list[MediaCandidate],
+        candidates: list[MediaCandidate],
+        seen: set[str],
+        max_images: int,
+    ) -> int:
+        """Append candidates not already seen (deduped by dedupe_key), respecting
+        the max_images budget. Returns how many were newly added."""
+        new_count = 0
+        for item in extracted:
+            if item.dedupe_key in seen:
+                continue
+            seen.add(item.dedupe_key)
+            candidates.append(item)
+            new_count += 1
+            if len(candidates) >= max_images:
+                break
+        return new_count
 
     def _extract_media(self, response: Any, geo_id: int) -> list[MediaCandidate]:
         """One MediaCandidate per Media_PhotoResult, downloading the largest size
@@ -220,161 +245,131 @@ class TripadvisorGraphQL:
                     return value
         return None
 
-    def _location_photos_media(
+    def _review_photos_media(
         self,
         page: GeoPage,
         *,
         max_images: int,
+        candidates: list[MediaCandidate],
         seen: set[str],
-    ) -> tuple[list[MediaCandidate], dict[str, Any]]:
-        first_url = self._location_photos_url(page)
-        if max_images <= 0 or not first_url:
-            return [], {}
+    ) -> dict[str, Any]:
+        """OPT-IN supplement (A3): top up with user-uploaded review photos when the
+        official album (~2550/geo) falls short of max_images.
 
-        candidates: list[MediaCandidate] = []
-        current_url = first_url
-        visited: set[str] = set()
-        total_available: int | None = None
+        INERT unless ta_review_photos_query_id is configured. The reviewListPage
+        preRegisteredQueryId is account/version-specific and must be captured from a
+        live Reviews page (F12 -> POST /data/graphql/ids); see findings §8. Once set,
+        we page reviews (limit<=20), pull each review's embedded photos, normalize to
+        the largest size, and merge into `candidates` deduped against the album.
+
+        Returns {} when disabled so the gallery summary stays clean."""
+        query_id = self.settings.ta_review_photos_query_id.strip()
+        if max_images <= 0 or not query_id:
+            return {}
+
+        limit = min(self.settings.ta_review_page_limit, 20)
+        ceiling = self.settings.ta_review_offset_ceiling
+        offset = 0
         pages_fetched = 0
-        items_seen = 0
+        photos_seen = 0
+        empty_streak = 0
+        added_before = len(candidates)
+        error: str | None = None
 
-        while current_url and current_url not in visited and len(candidates) < max_images:
-            visited.add(current_url)
-            html_text = self.client.get_html(current_url, referer=page.canonical_url or page.url)
-            parser = self._parse_location_photos_html(html_text)
-            pages_fetched += 1
-            total_available = total_available or self._extract_location_photos_total(html_text)
-
-            extracted = self._extract_location_photo_media(
-                parser,
-                geo_id=page.geo_id,
-                source_page_url=current_url,
-            )
-            items_seen += len(extracted)
-            new_count = 0
-            for item in extracted:
-                if item.dedupe_key in seen:
-                    continue
-                seen.add(item.dedupe_key)
-                candidates.append(item)
-                new_count += 1
-                if len(candidates) >= max_images:
-                    break
-
-            if len(candidates) >= max_images or new_count == 0:
+        while len(candidates) < max_images and offset <= ceiling:
+            payload = [
+                {
+                    "variables": {
+                        "locationId": page.geo_id,
+                        "offset": offset,
+                        "limit": limit,
+                        "filters": [],
+                        "prefs": None,
+                        "initialPrefs": None,
+                        "filterCacheKey": None,
+                        "prefsCacheKey": None,
+                        "needKeywords": False,
+                        "keywordVariant": "location_keywords_v2_llr_order_30_en",
+                        "language": self.settings.ta_locale.split("-", 1)[0],
+                        "sortType": "SERVER_DETERMINED",
+                        "photosPerReviewLimit": 7,
+                    },
+                    "extensions": {"preRegisteredQueryId": query_id},
+                }
+            ]
+            try:
+                response = self.client.post_graphql(payload, referer=page.canonical_url or page.url)
+                extracted = self._extract_review_photos(response, page.geo_id)
+            except Exception as exc:
+                # A bad/stale review query id (or a transient failure that survived
+                # the HTTP retries) must degrade gracefully: keep the album photos
+                # already collected rather than failing the whole geo.
+                error = f"review page offset={offset} failed: {exc}"
                 break
-            current_url = self._next_location_photos_url(parser, current_url, page.geo_id)
+            pages_fetched += 1
+            photos_seen += len(extracted)
 
-        return candidates, {
-            "first_url": first_url,
+            new_count = self._append_new(extracted, candidates, seen, max_images)
+            if new_count == 0:
+                empty_streak += 1
+                if empty_streak >= self.settings.ta_gallery_empty_page_stop:
+                    break
+            else:
+                empty_streak = 0
+            offset += limit
+
+        summary: dict[str, Any] = {
+            "query_id": query_id,
+            "limit": limit,
+            "offset_ceiling": ceiling,
+            "last_offset": offset,
             "pages_fetched": pages_fetched,
-            "items_seen": items_seen,
-            "items_added": len(candidates),
-            "total_photo_count": total_available,
+            "photos_seen": photos_seen,
+            "items_added": len(candidates) - added_before,
         }
+        if error:
+            summary["error"] = error
+        return summary
 
-    def _location_photos_url(self, page: GeoPage) -> str:
-        for candidate in (page.canonical_url, page.url):
-            if not candidate:
-                continue
-            parsed = urlparse(candidate)
-            path = parsed.path
-            if "/LocationPhotos-" in path:
-                return candidate
-            match = TOURISM_TO_PHOTOS_RE.search(path)
-            if match and int(match.group("geo_id")) == page.geo_id:
-                slug = match.group("slug")
-                return f"{self.settings.base_url}/LocationPhotos-g{page.geo_id}-{slug}.html"
-        return ""
-
-    @staticmethod
-    def _parse_location_photos_html(html_text: str) -> _LocationPhotosParser:
-        parser = _LocationPhotosParser()
-        parser.feed(html_text)
-        return parser
-
-    def _extract_location_photo_media(
-        self,
-        parser: _LocationPhotosParser,
-        *,
-        geo_id: int,
-        source_page_url: str,
-    ) -> list[MediaCandidate]:
+    def _extract_review_photos(self, response: Any, geo_id: int) -> list[MediaCandidate]:
+        """Pull photo nodes embedded in a reviewListPage response. Review photos
+        carry the same multi-size `sizes[]` shape as album photos, so we reuse the
+        largest-size picker and tag them source_kind='review_photo'."""
         items: list[MediaCandidate] = []
         seen_ids: set[str] = set()
-        for image in parser.images:
-            candidate = self._location_photo_candidate(image, geo_id, source_page_url)
-            if candidate is None or candidate.media_id in seen_ids:
+        max_side = self.settings.ta_download_side
+        for node in iter_dicts(response):
+            sizes = node.get("sizes")
+            if not isinstance(sizes, list) or not sizes:
                 continue
-            seen_ids.add(candidate.media_id)
-            items.append(candidate)
+            # Only treat a node as a photo when it actually exposes a usable image.
+            picked = self._pick_size(sizes, max_side)
+            if picked is None:
+                continue
+            url = picked.get("url")
+            if not isinstance(url, str) or "tripadvisor.com" not in url:
+                continue
+            media_id = self._media_id_from_node(node, url)
+            if media_id in seen_ids:
+                continue
+            seen_ids.add(media_id)
+            items.append(
+                MediaCandidate(
+                    media_id=f"review_photo:{media_id}",
+                    url=url,
+                    source_url=url,
+                    width=_int_or_none(picked.get("width")),
+                    height=_int_or_none(picked.get("height")),
+                    caption=self._caption_from_node(node),
+                    source_kind="review_photo",
+                    raw={
+                        "geo_id": geo_id,
+                        "upload_date_time": node.get("uploadDateTime"),
+                        "size_count": len(sizes),
+                    },
+                )
+            )
         return items
-
-    def _location_photo_candidate(
-        self,
-        image: dict[str, str],
-        geo_id: int,
-        source_page_url: str,
-    ) -> MediaCandidate | None:
-        raw_url = image.get("url", "")
-        if "/media/photo-" not in raw_url or "tripadvisor.com/media/photo-" not in raw_url:
-            return None
-        url = normalize_image_url(raw_url, default_side=self.settings.ta_download_side)
-        url = PHOTO_VARIANT_RE.sub("/media/photo-o/", url, count=1)
-        media_id = self._location_photo_id(url)
-        if not media_id:
-            return None
-        return MediaCandidate(
-            media_id=f"location_photo:{media_id}",
-            url=url,
-            source_url=url,
-            caption=clean_text(image.get("alt", "")),
-            source_kind="location_photos",
-            raw={
-                "geo_id": geo_id,
-                "source_page_url": source_page_url,
-                "original_url": raw_url,
-                "class": image.get("class", ""),
-            },
-        )
-
-    @staticmethod
-    def _location_photo_id(url: str) -> str:
-        path = urlparse(url).path
-        marker = "/media/photo-"
-        index = path.find(marker)
-        if index == -1:
-            return ""
-        parts = path[index + len(marker) :].split("/", 1)
-        if len(parts) != 2:
-            return ""
-        return parts[1].rsplit(".", 1)[0].replace("/", "-")
-
-    @staticmethod
-    def _extract_location_photos_total(html_text: str) -> int | None:
-        text = clean_text(re.sub(r"<[^>]+>", " ", html_text))
-        match = LOCATION_PHOTOS_RANGE_RE.search(text)
-        if not match:
-            return None
-        return _int_or_none(match.group("total").replace(",", ""))
-
-    def _next_location_photos_url(
-        self,
-        parser: _LocationPhotosParser,
-        current_url: str,
-        geo_id: int,
-    ) -> str:
-        next_page = self._location_photos_page_number(current_url) + 1
-        wanted = f"-w{next_page}-"
-        for href in parser.hrefs:
-            if f"LocationPhotos-g{geo_id}" in href and wanted in href:
-                return absolute_tripadvisor_url(self.settings.base_url, href)
-        return ""
-
-    @staticmethod
-    def _location_photos_page_number(url: str) -> int:
-        match = re.search(r"-w(?P<page>\d+)-", url)
-        return int(match.group("page")) if match else 1
 
 
 def _int_or_none(value: Any) -> int | None:
