@@ -1,0 +1,78 @@
+parent_destination,name_cn,name_en,latitude,longitude,kind,country_code,tripadvisor_url,tripadvisor_geo_id
+,京都,Kyoto,35.01160,135.75830,city,JP,https://www.tripadvisor.com/Tourism-g298564-Kyoto_Kyoto_Prefecture_Kinki-Vacations.html,298564
+,伊斯坦布尔,Istanbul,41.00820,28.97840,city,TR,https://www.tripadvisor.com/Tourism-g293974-Istanbul-Vacations.html,293974
+,巴黎,Paris,48.85660,2.35220,city,FR,https://www.tripadvisor.com/Tourism-g187147-Paris_Ile_de_France-Vacations.html,187147
+,布拉格,Prague,50.07550,14.43780,city,CZ,https://www.tripadvisor.com/Tourism-g274707-Prague_Bohemia-Vacations.html,274707
+,马拉喀什,Marrakesh,31.62950,-7.98110,city,MA,https://www.tripadvisor.com/Tourism-g293734-Marrakech_Marrakech_Safi-Vacations.html,293734
+,布宜诺斯艾利斯,Buenos Aires,-34.60370,-58.38160,city,AR,https://www.tripadvisor.com/Tourism-g312741-Buenos_Aires_Capital_Federal_District-Vacations.html,312741
+,里斯本,Lisbon,38.72230,-9.13930,city,PT,https://www.tripadvisor.com/Tourism-g189158-Lisbon_Lisbon_District_Central_Portugal-Vacations.html,189158
+,纽约,New York,40.71280,-74.00600,city,US,https://www.tripadvisor.com/Tourism-g60763-New_York_City_New_York-Vacations.html,60763
+,旧金山,San Francisco,37.77490,-122.41940,city,US,https://www.tripadvisor.com/Tourism-g60713-San_Francisco_California-Vacations.html,60713
+,新奥尔良,New Orleans,29.95110,-90.07150,city,US,https://www.tripadvisor.com/Tourism-g60864-New_Orleans_Louisiana-Vacations.html,60864
+,巴塔哥尼亚,Patagonia,-50.49550,-73.13760,natural_region,AR,https://www.tripadvisor.com/Tourism-g294276-Patagonia-Vacations.html,294276
+,新西兰南岛,South Island,-43.98330,170.45000,island,NZ,https://www.tripadvisor.com/Tourism-g255116-South_Island-Vacations.html,255116
+,瑞士阿尔卑斯,Swiss Alps,46.63680,8.59350,mountain_region,CH,https://www.tripadvisor.com/Tourism-g188077-Swiss_Alps-Vacations.html,188077
+,日本屋久岛,Yakushima,30.36000,130.53000,island,JP,https://www.tripadvisor.com/Tourism-g3211144-Yakushima_Yakushima_cho_Kumage_gun_Kagoshima_Prefecture_Kyushu-Vacations.html,3211144
+,大峡谷,Grand Canyon,36.05440,-112.14010,national_park,US,https://www.tripadvisor.com/Tourism-g143028-Grand_Canyon_National_Park_Arizona-Vacations.html,143028
+,优胜美地,Yosemite,37.86510,-119.53830,national_park,US,https://www.tripadvisor.com/Tourism-g61000-Yosemite_National_Park_California-Vacations.html,61000
+,夏威夷,Hawaii,19.56670,-155.50000,island_region,US,https://www.tripadvisor.com/Tourism-g29217-Island_of_Hawaii_Hawaii-Vacations.html,29217
+,冰岛,Iceland,64.96310,-19.02080,country,IS,https://www.tripadvisor.com/Tourism-g189952-Iceland-Vacations.html,189952
+,松恩峡湾,Sognefjord,61.06670,6.56670,fjord,NO,https://www.tripadvisor.com/Tourism-g190507-Sogn_og_Fjordane_Western_Norway-Vacations.html,190507
+,盖朗厄尔峡湾,Geirangerfjord,62.10140,7.20740,fjord,NO,https://www.tripadvisor.com/Tourism-g642196-Geiranger_Stranda_More_og_Romsdal_Western_Norway-Vacations.html,642196
+,梅尔祖卡,Merzouga,31.09970,-4.01360,desert,MA,https://www.tripadvisor.com/Tourism-g304017-Merzouga_Draa_Tafilalet-Vacations.html,304017
+,杜兹,Douz,33.46670,9.02030,desert,TN,https://www.tripadvisor.com/Tourism-g477972-Douz_Kebili_Governorate-Vacations.html,477972
+Swiss Alps,采尔马特,Zermatt,46.02070,7.74910,town,CH,https://www.tripadvisor.com/Tourism-g188113-Zermatt_Canton_of_Valais.html,188113
+Swiss Alps,格林德瓦,Grindelwald,46.62420,8.04140,town,CH,https://www.tripadvisor.com/Tourism-g188069-Grindelwald_Bernese_Oberland.html,188069
+Swiss Alps,因特拉肯,Interlaken,46.68630,7.86320,town,CH,https://www.tripadvisor.com/Tourism-g188052-Interlaken_Bernese_Oberland.html,188052
+Swiss Alps,劳特布龙嫩,Lauterbrunnen,46.59350,7.90910,village,CH,https://www.tripadvisor.com/Tourism-g188079-Lauterbrunnen_Bernese_Oberland.html,188079
+Swiss Alps,圣莫里茨,St. Moritz,46.49080,9.83550,town,CH,https://www.tripadvisor.com/Tourism-g188115-St_Moritz_Canton_of_Graubunden.html,188115
+Swiss Alps,达沃斯,Davos,46.80270,9.83500,town,CH,https://www.tripadvisor.com/Tourism-g188066-Davos_Canton_of_Graubunden.html,188066
+Yosemite,瓦沃纳,Wawona,37.53630,-119.65570,village,US,https://www.tripadvisor.com/Tourism-g33000-Wawona_Yosemite_National_Park_California.html,33000
+Yosemite,马里波萨,Mariposa,37.48490,-119.96630,town,US,https://www.tripadvisor.com/Tourism-g32777-Mariposa_California.html,32777
+Yosemite,奥克赫斯特,Oakhurst,37.32790,-119.64930,town,US,https://www.tripadvisor.com/Tourism-g32779-Oakhurst_California.html,32779
+Yosemite,格罗夫兰,Groveland,37.83800,-120.23080,town,US,https://www.tripadvisor.com/Tourism-g32776-Groveland_California.html,32776
+Yosemite,李韦宁,Lee Vining,37.95760,-119.12180,town,US,https://www.tripadvisor.com/Tourism-g32778-Lee_Vining_California.html,32778
+Yakushima,宫之浦,Miyanoura,30.42600,130.57200,town,JP,https://www.tripadvisor.com/Tourism-g298560-Miyanoura_Yakushima_Kagoshima_Prefecture.html,298560
+Yakushima,安房,Anbo,30.31500,130.65900,town,JP,https://www.tripadvisor.com/Tourism-g298561-Anbo_Yakushima_Kagoshima_Prefecture.html,298561
+Yakushima,永田,Nagata,30.40100,130.42000,village,JP,https://www.tripadvisor.com/Tourism-g298562-Nagata_Yakushima_Kagoshima_Prefecture.html,298562
+Norwegian Fjords,弗洛姆,Flam,60.86100,7.11400,village,NO,https://www.tripadvisor.com/Tourism-g190679-Flam_Sognefjord.html,190679
+Grand Canyon,大峡谷村,Grand Canyon Village,36.05440,-112.14010,village,US,https://www.tripadvisor.com/Tourism-g143022-Grand_Canyon_Village_Arizona.html,143022
+Grand Canyon,图萨扬,Tusayan,35.97330,-112.12660,town,US,https://www.tripadvisor.com/Tourism-g143023-Tusayan_Arizona.html,143023
+Grand Canyon,北缘,North Rim,36.21440,-112.05600,park_area,US,https://www.tripadvisor.com/Tourism-g143024-North_Rim_Arizona.html,143024
+Grand Canyon,南缘,South Rim,36.05750,-112.13700,park_area,US,https://www.tripadvisor.com/Tourism-g143021-South_Rim_Grand_Canyon_National_Park_Arizona.html,143021
+Grand Canyon,佩吉,Page,36.91470,-111.45580,town,US,https://www.tripadvisor.com/Tourism-g143025-Page_Arizona.html,143025
+Grand Canyon,威廉姆斯,Williams,35.24950,-112.19100,town,US,https://www.tripadvisor.com/Tourism-g143026-Williams_Arizona.html,143026
+Grand Canyon,弗拉格斯塔夫,Flagstaff,35.19830,-111.65130,city,US,https://www.tripadvisor.com/Tourism-g143027-Flagstaff_Arizona.html,143027
+South Island,皇后镇,Queenstown,-45.03120,168.66260,town,NZ,https://www.tripadvisor.com/Tourism-g255122-Queenstown_South_Island.html,255122
+South Island,瓦纳卡,Wanaka,-44.70320,169.13210,town,NZ,https://www.tripadvisor.com/Tourism-g255123-Wanaka_South_Island.html,255123
+South Island,蒂阿瑙,Te Anau,-45.41450,167.71810,town,NZ,https://www.tripadvisor.com/Tourism-g255124-Te_Anau_South_Island.html,255124
+South Island,米尔福德峡湾,Milford Sound,-44.67160,167.92560,fjord,NZ,https://www.tripadvisor.com/Tourism-g255125-Milford_Sound_South_Island.html,255125
+South Island,库克山,Aoraki Mount Cook,-43.73400,170.09600,national_park_or_village,NZ,https://www.tripadvisor.com/Tourism-g255126-Aoraki_Mount_Cook_South_Island.html,255126
+South Island,弗朗兹约瑟夫,Franz Josef,-43.38730,170.18310,town,NZ,https://www.tripadvisor.com/Tourism-g255127-Franz_Josef_South_Island.html,255127
+South Island,福克斯冰川,Fox Glacier,-43.46460,170.01750,town,NZ,https://www.tripadvisor.com/Tourism-g255128-Fox_Glacier_South_Island.html,255128
+South Island,特卡波湖,Lake Tekapo,-44.00470,170.47710,town,NZ,https://www.tripadvisor.com/Tourism-g255129-Lake_Tekapo_South_Island.html,255129
+Hawaii,欧胡岛,Oahu,21.43890,-158.00010,island,US,https://www.tripadvisor.com/Tourism-g29222-Oahu_Hawaii.html,29222
+Hawaii,毛伊岛,Maui,20.79840,-156.33190,island,US,https://www.tripadvisor.com/Tourism-g29223-Maui_Hawaii.html,29223
+Hawaii,可爱岛,Kauai,22.09640,-159.52610,island,US,https://www.tripadvisor.com/Tourism-g29224-Kauai_Hawaii.html,29224
+Hawaii,夏威夷大岛,Island of Hawaii,19.54290,-155.66590,island,US,https://www.tripadvisor.com/Tourism-g29225-Island_of_Hawaii_Hawaii.html,29225
+Hawaii,火奴鲁鲁,Honolulu,21.30690,-157.85830,city,US,https://www.tripadvisor.com/Tourism-g29226-Honolulu_Oahu_Hawaii.html,29226
+Hawaii,威基基,Waikiki,21.27930,-157.82920,neighborhood,US,https://www.tripadvisor.com/Tourism-g29227-Waikiki_Oahu_Hawaii.html,29227
+Hawaii,拉海纳,Lahaina,20.87830,-156.68250,town,US,https://www.tripadvisor.com/Tourism-g29228-Lahaina_Maui_Hawaii.html,29228
+Hawaii,希洛,Hilo,19.72410,-155.08680,town,US,https://www.tripadvisor.com/Tourism-g29229-Hilo_Island_of_Hawaii.html,29229
+Hawaii,凯卢阿-科纳,Kailua-Kona,19.64060,-155.99690,town,US,https://www.tripadvisor.com/Tourism-g29230-Kailua_Kona_Island_of_Hawaii.html,29230
+Hawaii,夏威夷火山国家公园,Hawaii Volcanoes National Park,19.41940,-155.28850,national_park,US,https://www.tripadvisor.com/Tourism-g29231-Hawaii_Volcanoes_National_Park_Island_of_Hawaii.html,29231
+Patagonia,埃尔查尔滕,El Chalten,-49.33150,-72.88630,town,AR,https://www.tripadvisor.com/Tourism-g312000-El_Chalten_Santa_Cruz_Province_Argentina.html,312000
+Patagonia,埃尔卡拉法特,El Calafate,-50.33790,-72.26480,town,AR,https://www.tripadvisor.com/Tourism-g312001-El_Calafate_Santa_Cruz_Province_Argentina.html,312001
+Patagonia,百内国家公园,Torres del Paine,-50.94230,-73.40680,national_park,CL,https://www.tripadvisor.com/Tourism-g312002-Torres_del_Paine_Magallanes_Region_Chile.html,312002
+Patagonia,纳塔莱斯港,Puerto Natales,-51.73090,-72.50600,town,CL,https://www.tripadvisor.com/Tourism-g312003-Puerto_Natales_Magallanes_Region_Chile.html,312003
+Patagonia,乌斯怀亚,Ushuaia,-54.80190,-68.30300,city,AR,https://www.tripadvisor.com/Tourism-g312004-Ushuaia_Tierra_del_Fuego_Province_Argentina.html,312004
+Patagonia,巴里洛切,Bariloche,-41.13350,-71.31030,city,AR,https://www.tripadvisor.com/Tourism-g312005-Bariloche_Rio_Negro_Province_Argentina.html,312005
+Patagonia,冰川国家公园,Los Glaciares National Park,-49.99610,-73.24900,national_park,AR,https://www.tripadvisor.com/Tourism-g312006-Los_Glaciares_National_Park_Santa_Cruz_Province_Argentina.html,312006
+Iceland,冰岛高地,Highlands of Iceland,64.75000,-18.50000,region,IS,https://www.tripadvisor.com/Tourism-g189000-Icelandic_Highlands.html,189000
+Sahara Desert,扎古拉,Zagora,30.33240,-5.83840,town,MA,https://www.tripadvisor.com/Tourism-g293001-Zagora_Draa_Tafilalet_Morocco.html,293001
+Sahara Desert,姆哈米德,M'Hamid,29.82420,-5.72080,desert_town,MA,https://www.tripadvisor.com/Tourism-g293002-M_Hamid_Draa_Tafilalet_Morocco.html,293002
+Sahara Desert,托泽尔,Tozeur,33.91970,8.13350,town,TN,https://www.tripadvisor.com/Tourism-g293004-Tozeur_Tozeur_Governorate_Tunisia.html,293004
+Marrakesh,马拉喀什老城,Medina of Marrakech,31.63150,-7.98640,neighborhood,MA,https://www.tripadvisor.com/Tourism-g293005-Medina_of_Marrakech_Marrakech_Safi_Morocco.html,293005
+Marrakesh,乌里卡山谷,Ourika Valley,31.33000,-7.76670,valley,MA,https://www.tripadvisor.com/Tourism-g293006-Ourika_Valley_Marrakech_Safi_Morocco.html,293006
+Marrakesh,伊姆利勒,Imlil,31.13500,-7.91940,village,MA,https://www.tripadvisor.com/Tourism-g293007-Imlil_Marrakech_Safi_Morocco.html,293007
+Marrakesh,阿特拉斯山脉,Atlas Mountains,31.05900,-7.91500,mountain_region,MA,https://www.tripadvisor.com/Tourism-g293008-Atlas_Mountains_Marrakech_Safi_Morocco.html,293008

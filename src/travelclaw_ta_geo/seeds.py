@@ -18,6 +18,7 @@ class DestinationSeed:
     country_code: str = ""
     tripadvisor_url: str = ""
     tripadvisor_geo_id: str = ""
+    parent_destination: str = ""
 
     @property
     def key(self) -> str:
@@ -68,5 +69,5 @@ def _seed_from_mapping(row: dict[str, object]) -> DestinationSeed:
         country_code=text("country_code").upper(),
         tripadvisor_url=text("tripadvisor_url"),
         tripadvisor_geo_id=text("tripadvisor_geo_id"),
+        parent_destination=text("parent_destination") or text("parent") or text("parent_name_en"),
     )
-

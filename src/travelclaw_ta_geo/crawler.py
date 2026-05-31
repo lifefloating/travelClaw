@@ -196,7 +196,22 @@ def build_geo_record(page: GeoPage, captured_at: str, settings: Settings, galler
     if not seed.has_center:
         raise ValueError(f"seed has no valid center: {seed.name_en or seed.name_cn}")
     source_url = page.canonical_url or page.url
-    name = page.name or seed.name_en or seed.name_cn
+    name = seed.name_en or page.name or seed.name_cn
+    name_i18n = {}
+    if seed.name_en:
+        name_i18n["en"] = seed.name_en
+    elif name:
+        name_i18n["en"] = name
+    if seed.name_cn:
+        name_i18n["zh-CN"] = seed.name_cn
+    raw_seed = {
+        "name_cn": seed.name_cn,
+        "name_en": seed.name_en,
+        "kind": seed.kind,
+        "country_code": seed.country_code,
+    }
+    if seed.parent_destination:
+        raw_seed["parent_destination"] = seed.parent_destination
     return {
         "record_id": page.record_id,
         "source": settings.source,
@@ -204,7 +219,7 @@ def build_geo_record(page: GeoPage, captured_at: str, settings: Settings, galler
         "source_url": source_url,
         "captured_at": captured_at,
         "name": name,
-        "name_i18n": {"en": name},
+        "name_i18n": name_i18n,
         "kind_hint": f"tripadvisor:{seed.kind or 'geo'}",
         "country_code": seed.country_code,
         "center": {"lat": seed.latitude, "lng": seed.longitude},
@@ -217,12 +232,7 @@ def build_geo_record(page: GeoPage, captured_at: str, settings: Settings, galler
             "sections_seen": page.sections_seen,
             "tripadvisor_ids": {"geo_id": page.geo_id},
             "gallery": gallery_meta or {},
-            "seed": {
-                "name_cn": seed.name_cn,
-                "name_en": seed.name_en,
-                "kind": seed.kind,
-                "country_code": seed.country_code,
-            },
+            "seed": raw_seed,
         },
     }
 

@@ -10,3 +10,10 @@ def test_load_sample_seeds() -> None:
     assert seeds[0].country_code == "JP"
     assert seeds[0].has_center
 
+
+def test_load_supplemental_seeds_with_parent_destination() -> None:
+    seeds = load_seeds(Path("seeds/destinations.supplemental.csv"))
+    assert len(seeds) == 55
+    assert seeds[0].name_en == "Zermatt"
+    assert seeds[0].parent_destination == "Swiss Alps"
+    assert seeds[0].tripadvisor_geo_id == "188113"
