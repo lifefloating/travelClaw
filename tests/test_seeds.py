@@ -17,3 +17,11 @@ def test_load_supplemental_seeds_with_parent_destination() -> None:
     assert seeds[0].name_en == "Zermatt"
     assert seeds[0].parent_destination == "Swiss Alps"
     assert seeds[0].tripadvisor_geo_id == "188113"
+
+
+def test_load_round2_supplemental_seeds() -> None:
+    seeds = load_seeds(Path("seeds/destinations.supplemental.round2.csv"))
+    assert len(seeds) == 35
+    assert seeds[0].name_en == "Punta Arenas"
+    assert seeds[0].parent_destination == "Patagonia"
+    assert seeds[-1].name_en == "Poipu"

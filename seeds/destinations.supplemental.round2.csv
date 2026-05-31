@@ -1,0 +1,36 @@
+parent_destination,name_cn,name_en,latitude,longitude,kind,country_code,tripadvisor_url,tripadvisor_geo_id
+Patagonia,蓬塔阿雷纳斯,Punta Arenas,-53.16380,-70.91710,city,CL,https://www.tripadvisor.com/Tourism-g297401-Punta_Arenas_Magallanes_Region-Vacations.html,297401
+Patagonia,科伊艾克,Coyhaique,-45.57120,-72.06830,city,CL,https://www.tripadvisor.com/Tourism-g317798-Coyhaique_Aisen_Region-Vacations.html,317798
+Patagonia,巴拉斯港,Puerto Varas,-41.31740,-72.98540,town,CL,https://www.tripadvisor.com/Tourism-g294299-Puerto_Varas_Los_Lagos_Region-Vacations.html,294299
+Patagonia,安戈斯图拉镇,Villa La Angostura,-40.76170,-71.64630,town,AR,https://www.tripadvisor.com/Tourism-g312844-Villa_La_Angostura_Province_of_Neuquen_Patagonia-Vacations.html,312844
+Patagonia,圣马丁德洛斯安第斯,San Martin de los Andes,-40.15790,-71.35340,town,AR,https://www.tripadvisor.com/Tourism-g312843-San_Martin_de_los_Andes_Province_of_Neuquen_Patagonia-Vacations.html,312843
+Patagonia,埃尔博尔松,El Bolson,-41.96050,-71.53340,town,AR,https://www.tripadvisor.com/Tourism-g681282-El_Bolson_Province_of_Rio_Negro_Patagonia-Vacations.html,681282
+Patagonia,普埃托蒙特,Puerto Montt,-41.46890,-72.94110,city,CL,https://www.tripadvisor.com/Tourism-g294298-Puerto_Montt_Los_Lagos_Region-Vacations.html,294298
+Patagonia,埃尔查尔滕,El Chalten,-49.33150,-72.88630,town,AR,https://www.tripadvisor.com/Tourism-g316035-El_Chalten_Province_of_Santa_Cruz_Patagonia-Vacations.html,316035
+Patagonia,埃尔卡拉法特,El Calafate,-50.33790,-72.26480,town,AR,https://www.tripadvisor.com/Tourism-g312851-El_Calafate_Province_of_Santa_Cruz_Patagonia-Vacations.html,312851
+Patagonia,托雷斯德尔帕伊内国家公园,Torres del Paine,-50.94230,-73.40680,national_park,CL,https://www.tripadvisor.com/Tourism-g670171-Torres_del_Paine_National_Park_Magallanes_Region-Vacations.html,670171
+Marrakesh,瓦尔扎扎特,Ouarzazate,30.93350,-6.93700,city,MA,https://www.tripadvisor.com/Tourism-g304018-Ouarzazate_Draa_Tafilalet-Vacations.html,304018
+Marrakesh,阿伊特本哈杜,Ait Ben Haddou,31.04700,-7.12990,village_or_ksar,MA,https://www.tripadvisor.com/Tourism-g304011-Ait_Ben_Haddou_Souss_Massa-Vacations.html,304011
+Marrakesh,索维拉,Essaouira,31.50850,-9.75950,city,MA,https://www.tripadvisor.com/Tourism-g298349-Essaouira_Marrakech_Safi-Vacations.html,298349
+Marrakesh,图卜卡勒国家公园,Toubkal National Park,31.05900,-7.91500,national_park,MA,https://www.tripadvisor.com/Tourism-g33068477-Toubkal_Souss_Massa-Vacations.html,33068477
+Marrakesh,阿斯尼,Asni,31.24910,-7.98260,village,MA,https://www.tripadvisor.com/Tourism-g676158-Asni_Marrakech_Safi-Vacations.html,676158
+Sahara Desert,埃尔富德,Erfoud,31.43530,-4.23260,town,MA,https://www.tripadvisor.com/Tourism-g317070-Erfoud_Meknes_Tafilalet_Region-Vacations.html,317070
+Sahara Desert,里萨尼,Rissani,31.28200,-4.26560,town,MA,https://www.tripadvisor.com/Tourism-g304019-Rissani_Meknes_Tafilalet_Region-Vacations.html,304019
+Sahara Desert,廷吉尔,Tinerhir,31.51470,-5.53280,town,MA,https://www.tripadvisor.com/Tourism-g480211-Tinerhir_Souss_Massa-Vacations.html,480211
+Sahara Desert,塔塔,Tata,29.74460,-7.97300,town,MA,https://www.tripadvisor.com/Tourism-g304021-Tata_Guelmim_Oued_Noun-Vacations.html,304021
+Sahara Desert,内夫塔,Nefta,33.87310,7.87770,town,TN,https://www.tripadvisor.com/Tourism-g297951-Nefta_Tozeur_Governorate-Vacations.html,297951
+Sahara Desert,马特马他,Matmata,33.54420,9.97160,town,TN,https://www.tripadvisor.com/Tourism-g293756-Matmata_Gabes_Governorate-Vacations.html,293756
+Norwegian Fjords,卑尔根,Bergen,60.39130,5.32210,city,NO,https://www.tripadvisor.com/Tourism-g190502-Bergen_Hordaland_Western_Norway-Vacations.html,190502
+Norwegian Fjords,奥勒松,Alesund,62.47220,6.14950,city,NO,https://www.tripadvisor.com/Tourism-g190504-Alesund_More_og_Romsdal_Western_Norway-Vacations.html,190504
+Norwegian Fjords,艾于兰,Aurland,60.90560,7.18730,town,NO,https://www.tripadvisor.com/Tourism-g678207-Aurland_Municipality_Sogn_og_Fjordane_Western_Norway-Vacations.html,678207
+Norwegian Fjords,洛恩,Loen,61.87160,6.84770,village,NO,https://www.tripadvisor.com/Tourism-g315898-Loen_Stryn_Municipality_Sogn_og_Fjordane_Western_Norway-Vacations.html,315898
+Norwegian Fjords,奥尔登,Olden,61.83640,6.80620,village,NO,https://www.tripadvisor.com/Tourism-g2148176-Olden_Stryn_Municipality_Sogn_og_Fjordane_Western_Norway-Vacations.html,2148176
+Norwegian Fjords,奥达,Odda,60.06910,6.54570,town,NO,https://www.tripadvisor.com/Tourism-g1096319-Odda_Hardanger_Hordaland_Western_Norway-Vacations.html,1096319
+Norwegian Fjords,斯塔万格,Stavanger,58.97000,5.73310,city,NO,https://www.tripadvisor.com/Tourism-g190511-Stavanger_Stavanger_Municipality_Rogaland_Western_Norway-Vacations.html,190511
+Hawaii,基黑,Kihei,20.76440,-156.44500,town,US,https://www.tripadvisor.com/Tourism-g60632-Kihei_Maui_Hawaii-Vacations.html,60632
+Hawaii,维雷亚,Wailea,20.68970,-156.44060,resort_area,US,https://www.tripadvisor.com/Tourism-g609129-Wailea_Maui_Hawaii-Vacations.html,609129
+Hawaii,卡阿纳帕利,Ka'anapali,20.93440,-156.67750,resort_area,US,https://www.tripadvisor.com/Tourism-g580462-Ka_anapali_Maui_Hawaii-Vacations.html,580462
+Hawaii,卡帕鲁亚,Kapalua,20.99930,-156.65810,resort_area,US,https://www.tripadvisor.com/Tourism-g209273-Kapalua_Maui_Hawaii-Vacations.html,209273
+Hawaii,火山村,Volcano,19.43080,-155.23500,village,US,https://www.tripadvisor.com/Tourism-g60607-Volcano_Island_of_Hawaii_Hawaii-Vacations.html,60607
+Hawaii,普林斯维尔,Princeville,22.22360,-159.48530,town,US,https://www.tripadvisor.com/Tourism-g60626-Princeville_Kauai_Hawaii-Vacations.html,60626
+Hawaii,波伊普,Poipu,21.87960,-159.45810,town,US,https://www.tripadvisor.com/Tourism-g60625-Poipu_Koloa_Kauai_Hawaii-Vacations.html,60625
